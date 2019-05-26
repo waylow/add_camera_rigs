@@ -1,0 +1,13 @@
+TO DO:
+-split file into components
+    __init__
+    build_rigs
+    create_widgets
+    ui_panels
+
+-fix the __init__.py so it works again
+
+-get the collections working properly
+
+-add preferences so the user can set their own naming convention (for collections
+and widgets)

@@ -29,3 +29,8 @@ WHAT DO I NEED HELP WITH?
 I'm trying to move from being a 'scripter' to a 'coder'.  So any advice on how to
 structure the project and any advice on smarter ways to do things.
 (I'm self taught so I'm sure I have a lot of rookie mistakes)
+
+I am using git but I don't really know what I'm doing
+I need some advice on how to use it for when I want to try to add a feature w/o
+it breaking the working version.
+Best practice advice, and also how to branch and merge (that type of stuff)
