@@ -1,29 +1,31 @@
 # README #
+Video Demo: https://vimeo.com/85884210
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is the camera rigs add-on that I wrote for blender 2.6x
+It currently ships with blender
 
-### What is this repository for? ###
+The version that ships with 2.8 has had a automated script from the Blender Foundation
+that edits some of the code to be valid for some of the api changes
+(eg layers are now collections etc)
+However, there are quite a lot of broken features and bugs in that version
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
+My aim is as follows:
+-update the code to work fully with 2.8 (fix broken stuff)
+-improve my coding skills and split the code into smaller files (make it cleaner and more logical)
+-improve the functionality of the rigs (make it work better)
+-improve the code (learn how to do things smarter)
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+So far I have fixed some of the broken features (collections still work weirdly)
+And I have started to split the original script into logical parts.
 
-### Contribution guidelines ###
+It currently won't work as I have split the files and I don't really know how to
+reconnect in to the __init__.py
+(at least I think that is what I need to do??)
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+-------------------------
+WHAT DO I NEED HELP WITH?
+-------------------------
+I'm trying to move from being a 'scripter' to a 'coder'.  So any advice on how to
+structure the project and any advice on smarter ways to do things.
+(I'm self taught so I'm sure I have a lot of rookie mistakes)
