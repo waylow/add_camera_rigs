@@ -1,3 +1,6 @@
+import bpy
+
+
 class ADD_CAMERA_RIGS_PT_DollyCameraUI(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -127,3 +130,32 @@ class ADD_CAMERA_RIGS_OT_CraneCameraUI(bpy.types.Panel):
         col.label(text="Crane Arm:")
         col.prop(pose_bones["Height"], 'scale', index=1, text="Arm Height")
         col.prop(pose_bones["Crane_Arm"], 'scale', index=1, text="Arm Length")
+
+
+# dolly button in Armature menu
+def add_dolly_button(self, context):
+    if context.mode == 'OBJECT':
+        self.layout.operator(
+            BuildDollyRig.bl_idname,
+            text="Dolly Camera Rig",
+            icon='CAMERA_DATA')
+
+# crane button in Armature menu
+
+
+def add_crane_button(self, context):
+    if context.mode == 'OBJECT':
+        self.layout.operator(
+            BuildCraneRig.bl_idname,
+            text="Crane Camera Rig",
+            icon='CAMERA_DATA')
+
+
+def register():
+    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_button)
+    bpy.types.VIEW3D_MT_camera_add.append(add_crane_button)
+
+
+def unregister():
+    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_button)
+    bpy.types.VIEW3D_MT_camera_add.remove(add_crane_button)

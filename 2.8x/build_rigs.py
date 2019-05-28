@@ -1,6 +1,13 @@
+import bpy
+from bpy.types import Operator
+from rna_prop_ui import rna_idprop_ui_prop_get
+from math import radians
+
 # =========================================================================
 # Define the function to build the Dolly Rig
 # =========================================================================
+
+
 def build_dolly_rig(context):
     # Define some useful variables:
     boneLayer = (False, True, False, False, False, False, False, False,
@@ -113,7 +120,7 @@ def build_dolly_rig(context):
         view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
     cam = bpy.context.active_object
 
-    # this will name the Camera Object
+    # Name the Camera Object
     if 'Dolly_Camera' not in context.scene.objects:
         cam.name = "Dolly_Camera"
     else:
@@ -156,6 +163,29 @@ def build_dolly_rig(context):
     rig.select = True
 
     return rig
+
+# =========================================================================
+# This is the operator that will call all the functions and build the dolly rig
+# =========================================================================
+
+
+class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
+    """Build a Camera Dolly Rig"""
+    bl_idname = "object.build_dolly_rig"
+    bl_label = "Build Dolly Camera Rig"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        # build the Widgets
+        create_root_widget(self, "Camera_Root")
+        create_camera_widget(self, "CTRL")
+        create_aim_widget(self, "AIM")
+
+        # call the function to build the rig
+        build_dolly_rig(context)
+        return {'FINISHED'}
+
 
 # =========================================================================
 # Define the function to build the Crane Rig
@@ -339,3 +369,46 @@ def build_crane_rig(context):
     rig.select = True
 
     return rig
+
+
+# =========================================================================
+# This is the operator that will call all the functions and build the crane rig
+# =========================================================================
+class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
+    """Build a Camera Crane Rig"""
+    bl_idname = "object.build_crane_rig"
+    bl_label = "Build Crane Camera Rig"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        # build the Widgets
+        create_root_widget(self, "Camera_Root")
+        create_camera_widget(self, "CTRL")
+        create_aim_widget(self, "AIM")
+
+        # call the function to build the rig
+        build_crane_rig(context)
+        return {'FINISHED'}
+
+
+classes = (
+    ADD_CAMERA_RIGS_OT_build_dolly_rig,
+    ADD_CAMERA_RIGS_OT_build_crane_rig,
+)
+
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in classes:
+        unregister_class(cls)
+
+
+if __name__ == "__main__":
+    register()
