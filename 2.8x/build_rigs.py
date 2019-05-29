@@ -19,13 +19,13 @@ def build_dolly_rig(context):
     bpy.ops.object.armature_add()
     rig = context.active_object
 
-    # it will try to name the rig "Dolly_Rig" but if that name exists it will
+    # it will try to name the rig "Dolly_rig" but if that name exists it will
     # add 000 to the name
-    if "Dolly_Rig" not in context.scene.objects:
-        rig.name = "Dolly_Rig"
+    if "Dolly_rig" not in context.scene.objects:
+        rig.name = "Dolly_rig"
     else:
-        rig.name = "Dolly_Rig.000"
-    rig["rig_id"] = "Dolly_Rig"
+        rig.name = "Dolly_rig.000"
+    rig["rig_id"] = "Dolly_rig"
 
     bpy.ops.object.mode_set(mode='EDIT')
 
@@ -65,7 +65,7 @@ def build_dolly_rig(context):
     # jump into pose mode and add the custom bone shapes
     bpy.ops.object.mode_set(mode='POSE')
     bpy.context.object.pose.bones["Root"].custom_shape = bpy.data.objects[
-        "WDGT_Camera_Root"]  # add the widget as custom shape
+        "WDGT_Camera_root"]  # add the widget as custom shape
     # set the wireframe checkbox to true
     bpy.context.object.data.bones["Root"].show_wire = True
     bpy.context.object.pose.bones[
@@ -121,16 +121,16 @@ def build_dolly_rig(context):
     cam = bpy.context.active_object
 
     # Name the Camera Object
-    if 'Dolly_Camera' not in context.scene.objects:
-        cam.name = "Dolly_Camera"
+    if 'Dolly_camera' not in context.scene.objects:
+        cam.name = "Dolly_camera"
     else:
-        cam.name = "Dolly_Camera.000"
+        cam.name = "Dolly_camera.000"
 
     # this will name the camera Data Object
-    if "Dolly_Camera" not in bpy.context.scene.objects.data.camera:
-        cam.data.name = "Dolly_Camera"
+    if "Dolly_camera" not in bpy.context.scene.objects.data.camera:
+        cam.data.name = "Dolly_camera"
     else:
-        cam.data.name = "Dolly_Camera.000"
+        cam.data.name = "Dolly_camera.000"
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].draw_size = 1.0
@@ -178,7 +178,7 @@ class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
     def execute(self, context):
 
         # build the Widgets
-        create_root_widget(self, "Camera_Root")
+        create_root_widget(self, "Camera_root")
         create_camera_widget(self, "Ctrl")
         create_aim_widget(self, "Aim")
 
@@ -201,13 +201,13 @@ def build_crane_rig(context):
     bpy.ops.object.armature_add()
     rig = context.active_object
 
-    # it will try to name the rig "Dolly_Rig" but if that name exists it will
+    # it will try to name the rig "Crane_rig" but if that name exists it will
     # add .000 to the name
-    if "Crane_Rig" not in context.scene.objects:
-        rig.name = "Crane_Rig"
+    if "Crane_rig" not in context.scene.objects:
+        rig.name = "Crane_rig"
     else:
-        rig.name = "Crane_Rig.000"
-    rig["rig_id"] = "Crane_Rig"
+        rig.name = "Crane_rig.000"
+    rig["rig_id"] = "Crane_rig"
 
     bpy.ops.object.mode_set(mode='EDIT')
 
@@ -232,7 +232,7 @@ def build_crane_rig(context):
     ctrl.head = (0.0, 1.0, 1.0)
     ctrl.tail = (0.0, 3.0, 1.0)
 
-    arm = bones.new("Crane_Arm")
+    arm = bones.new("Crane_arm")
     arm.head = (0.0, 0.0, 1.0)
     arm.tail = (0.0, 1.0, 1.0)
 
@@ -264,15 +264,15 @@ def build_crane_rig(context):
 
     # lock the relevant loc, rot and scale
     bpy.context.object.pose.bones[
-        "Crane_Arm"].lock_rotation = [False, True, False]
-    bpy.context.object.pose.bones["Crane_Arm"].lock_scale = [True, False, True]
+        "Crane_arm"].lock_rotation = [False, True, False]
+    bpy.context.object.pose.bones["Crane_arm"].lock_scale = [True, False, True]
     bpy.context.object.pose.bones["Height"].lock_location = [True, True, True]
     bpy.context.object.pose.bones["Height"].lock_rotation = [True, True, True]
     bpy.context.object.pose.bones["Height"].lock_scale = [True, False, True]
 
     # add the custom bone shapes
     bpy.context.object.pose.bones["Root"].custom_shape = bpy.data.objects[
-        "WDGT_Camera_Root"]  # add the widget as custom shape
+        "WDGT_Camera_root"]  # add the widget as custom shape
     # set the wireframe checkbox to true
     bpy.context.object.data.bones["Root"].show_wire = True
     bpy.context.object.pose.bones[
@@ -328,16 +328,16 @@ def build_crane_rig(context):
     cam = bpy.context.active_object
 
     # this will name the Camera Object
-    if 'Crane_Camera' not in context.scene.objects:
-        cam.name = "Crane_Camera"
+    if 'Crane_camera' not in context.scene.objects:
+        cam.name = "Crane_camera"
     else:
-        cam.name = "Crane_Camera.000"
+        cam.name = "Crane_camera.000"
 
     # this will name the camera Data Object
-    if "Crane_Camera" not in bpy.context.scene.objects.data.camera:
-        cam.data.name = "Crane_Camera"
+    if "Crane_camera" not in bpy.context.scene.objects.data.camera:
+        cam.data.name = "Crane_camera"
     else:
-        cam.data.name = "Crane_Camera.000"
+        cam.data.name = "Crane_camera.000"
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].draw_size = 1.0
