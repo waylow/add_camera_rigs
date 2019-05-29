@@ -39,16 +39,16 @@ def build_dolly_rig(context):
     root.roll = radians(90)
 
     bpy.ops.object.mode_set(mode='EDIT')
-    ctrlAimChild = bones.new("AIM_child")
+    ctrlAimChild = bones.new("aim_MCH")
     ctrlAimChild.head = (0.0, 5.0, 3.0)
     ctrlAimChild.tail = (0.0, 7.0, 3.0)
     ctrlAimChild.layers = boneLayer
 
-    ctrlAim = bones.new("AIM")
+    ctrlAim = bones.new("Aim")
     ctrlAim.head = (0.0, 5.0, 3.0)
     ctrlAim.tail = (0.0, 7.0, 3.0)
 
-    ctrl = bones.new("CTRL")
+    ctrl = bones.new("Ctrl")
     ctrl.head = (0.0, 0.0, 3.0)
     ctrl.tail = (0.0, 2.0, 3.0)
 
@@ -69,29 +69,29 @@ def build_dolly_rig(context):
     # set the wireframe checkbox to true
     bpy.context.object.data.bones["Root"].show_wire = True
     bpy.context.object.pose.bones[
-        "AIM"].custom_shape = bpy.data.objects["WDGT_AIM"]
-    bpy.context.object.data.bones["AIM"].show_wire = True
-    bpy.context.object.pose.bones["AIM"].custom_shape_transform = bpy.data.objects[
-        rig.name].pose.bones["AIM_child"]  # sets the "At" field to the child
+        "Aim"].custom_shape = bpy.data.objects["WDGT_Aim"]
+    bpy.context.object.data.bones["Aim"].show_wire = True
+    bpy.context.object.pose.bones["Aim"].custom_shape_transform = bpy.data.objects[
+        rig.name].pose.bones["aim_MCH"]  # sets the "At" field to the child
     bpy.context.object.pose.bones[
-        "CTRL"].custom_shape = bpy.data.objects["WDGT_CTRL"]
-    bpy.context.object.data.bones["CTRL"].show_wire = True
+        "Ctrl"].custom_shape = bpy.data.objects["WDGT_Ctrl"]
+    bpy.context.object.data.bones["Ctrl"].show_wire = True
 
     # jump into object mode
     bpy.ops.object.mode_set(mode='OBJECT')
 
     # Add constraints to bones:
-    con = rig.pose.bones['AIM_child'].constraints.new('COPY_ROTATION')
+    con = rig.pose.bones['aim_MCH'].constraints.new('COPY_ROTATION')
     con.target = rig
-    con.subtarget = "CTRL"
+    con.subtarget = "Ctrl"
 
-    con = rig.pose.bones['CTRL'].constraints.new('TRACK_TO')
+    con = rig.pose.bones['Ctrl'].constraints.new('TRACK_TO')
     con.target = rig
-    con.subtarget = "AIM"
+    con.subtarget = "Aim"
     con.use_target_z = True
 
     # Add custom Bone property to CTRL bone
-    ob = bpy.context.object.pose.bones['CTRL']
+    ob = bpy.context.object.pose.bones['Ctrl']
     prop = rna_idprop_ui_prop_get(ob, "Lock", create=True)
     ob["Lock"] = 1.0
     prop["soft_min"] = prop["min"] = 0.0
@@ -99,7 +99,7 @@ def build_dolly_rig(context):
 
     # Add Driver to Lock/Unlock Camera from Aim Target
     rig = bpy.context.scene.objects.active
-    pose_bone = bpy.data.objects[rig.name].pose.bones['CTRL']
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Ctrl']
 
     constraint = pose_bone.constraints["Track To"]
     inf_driver = constraint.driver_add('influence')
@@ -110,7 +110,7 @@ def build_dolly_rig(context):
 
     # Target the Custom bone property
     var.targets[0].id = bpy.data.objects[rig.name]
-    var.targets[0].data_path = 'pose.bones["CTRL"]["Lock"]'
+    var.targets[0].data_path = 'pose.bones["Ctrl"]["Lock"]'
     inf_driver.driver.expression = 'var'
 
     # Add the camera object:
@@ -138,7 +138,7 @@ def build_dolly_rig(context):
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
     cam.parent_type = "BONE"
-    cam.parent_bone = "CTRL"
+    cam.parent_bone = "Ctrl"
 
     # Add blank drivers to lock the camera loc, rot scale
     cam.driver_add('location', 0)
@@ -179,8 +179,8 @@ class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
 
         # build the Widgets
         create_root_widget(self, "Camera_Root")
-        create_camera_widget(self, "CTRL")
-        create_aim_widget(self, "AIM")
+        create_camera_widget(self, "Ctrl")
+        create_aim_widget(self, "Aim")
 
         # call the function to build the rig
         build_dolly_rig(context)
@@ -219,16 +219,16 @@ def build_crane_rig(context):
     root = bones.new("Root")
     root.tail = (0.0, 0.0, -5.0)
 
-    ctrlAimChild = bones.new("AIM_child")
+    ctrlAimChild = bones.new("aim_MCH")
     ctrlAimChild.head = (0.0, 10.0, 1.0)
     ctrlAimChild.tail = (0.0, 12.0, 1.0)
     ctrlAimChild.layers = boneLayer
 
-    ctrlAim = bones.new("AIM")
+    ctrlAim = bones.new("Aim")
     ctrlAim.head = (0.0, 10.0, 1.0)
     ctrlAim.tail = (0.0, 12.0, 1.0)
 
-    ctrl = bones.new("CTRL")
+    ctrl = bones.new("Ctrl")
     ctrl.head = (0.0, 1.0, 1.0)
     ctrl.tail = (0.0, 3.0, 1.0)
 
@@ -276,29 +276,29 @@ def build_crane_rig(context):
     # set the wireframe checkbox to true
     bpy.context.object.data.bones["Root"].show_wire = True
     bpy.context.object.pose.bones[
-        "AIM"].custom_shape = bpy.data.objects["WDGT_AIM"]
-    bpy.context.object.data.bones["AIM"].show_wire = True
-    bpy.context.object.pose.bones["AIM"].custom_shape_transform = bpy.data.objects[
-        rig.name].pose.bones["AIM_child"]  # sets the "At" field to the child
+        "Aim"].custom_shape = bpy.data.objects["WDGT_Aim"]
+    bpy.context.object.data.bones["Aim"].show_wire = True
+    bpy.context.object.pose.bones["Aim"].custom_shape_transform = bpy.data.objects[
+        rig.name].pose.bones["aim_MCH"]  # sets the "At" field to the child
     bpy.context.object.pose.bones[
-        "CTRL"].custom_shape = bpy.data.objects["WDGT_CTRL"]
-    bpy.context.object.data.bones["CTRL"].show_wire = True
+        "Ctrl"].custom_shape = bpy.data.objects["WDGT_Ctrl"]
+    bpy.context.object.data.bones["Ctrl"].show_wire = True
 
     # jump into object mode
     bpy.ops.object.mode_set(mode='OBJECT')
 
     # Add constraints to bones:
-    con = rig.pose.bones['AIM_child'].constraints.new('COPY_ROTATION')
+    con = rig.pose.bones['aim_MCH'].constraints.new('COPY_ROTATION')
     con.target = rig
-    con.subtarget = "CTRL"
+    con.subtarget = "Ctrl"
 
-    con = rig.pose.bones['CTRL'].constraints.new('TRACK_TO')
+    con = rig.pose.bones['Ctrl'].constraints.new('TRACK_TO')
     con.target = rig
-    con.subtarget = "AIM"
+    con.subtarget = "Aim"
     con.use_target_z = True
 
     # Add custom Bone property to CTRL bone
-    ob = bpy.context.object.pose.bones['CTRL']
+    ob = bpy.context.object.pose.bones['Ctrl']
     prop = rna_idprop_ui_prop_get(ob, "Lock", create=True)
     ob["Lock"] = 1.0
     prop["soft_min"] = prop["min"] = 0.0
@@ -306,7 +306,7 @@ def build_crane_rig(context):
 
     # Add Driver to Lock/Unlock Camera from Aim Target
     rig = bpy.context.scene.objects.active
-    pose_bone = bpy.data.objects[rig.name].pose.bones['CTRL']
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Ctrl']
 
     constraint = pose_bone.constraints["Track To"]
     inf_driver = constraint.driver_add('influence')
@@ -317,7 +317,7 @@ def build_crane_rig(context):
 
     # Target the Custom bone property
     var.targets[0].id = bpy.data.objects[rig.name]
-    var.targets[0].data_path = 'pose.bones["CTRL"]["Lock"]'
+    var.targets[0].data_path = 'pose.bones["Ctrl"]["Lock"]'
     inf_driver.driver.expression = 'var'
 
     # Add the camera object:
@@ -345,7 +345,7 @@ def build_crane_rig(context):
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
     cam.parent_type = "BONE"
-    cam.parent_bone = "CTRL"
+    cam.parent_bone = "Ctrl"
     # Add blank drivers to lock the camera loc, rot scale
     cam.driver_add('location', 0)
     cam.driver_add('location', 1)
@@ -381,11 +381,10 @@ class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-
         # build the Widgets
-        create_root_widget(self, "Camera_Root")
-        create_camera_widget(self, "CTRL")
-        create_aim_widget(self, "AIM")
+        create_root_widget(self, "Root")
+        create_camera_widget(self, "Ctrl")
+        create_aim_widget(self, "Aim")
 
         # call the function to build the rig
         build_crane_rig(context)

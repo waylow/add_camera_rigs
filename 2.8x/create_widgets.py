@@ -10,7 +10,7 @@ def create_widget(self, name):
         mesh = bpy.data.meshes.new(obj_name)
         obj = bpy.data.objects.new(obj_name, mesh)
 
-        WDGT_collection_name = 'WDGTS'
+        WDGT_collection_name = 'WDGTS_Camera'
         view_layer = context.view_layer
         layer_collection = bpy.context.layer_collection
         collection = layer_collection.collection
