@@ -2,6 +2,10 @@ import bpy
 from bpy.types import Operator
 from rna_prop_ui import rna_idprop_ui_prop_get
 from math import radians
+import create_widget
+import create_root_widget
+import create_camera_widget
+import create_aim_widget
 
 # =========================================================================
 # Define the function to build the Dolly Rig
@@ -169,9 +173,9 @@ def build_dolly_rig(context):
 # =========================================================================
 
 
-class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
+class BuildDollyRig(Operator):
     """Build a Camera Dolly Rig"""
-    bl_idname = "object.build_dolly_rig"
+    bl_idname = "ADD_CAMERA_RIGS_OT_build_dolly_rig"
     bl_label = "Build Dolly Camera Rig"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -374,9 +378,9 @@ def build_crane_rig(context):
 # =========================================================================
 # This is the operator that will call all the functions and build the crane rig
 # =========================================================================
-class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
+class BuildCraneRig(Operator):
     """Build a Camera Crane Rig"""
-    bl_idname = "object.build_crane_rig"
+    bl_idname = "ADD_CAMERA_RIGS_OT_build_crane_rig"
     bl_label = "Build Crane Camera Rig"
     bl_options = {'REGISTER', 'UNDO'}
 

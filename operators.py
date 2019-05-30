@@ -17,7 +17,7 @@ def set_scene_camera():
 
 class SetSceneCamera(Operator):
     '''Makes the camera parented to this rig the active scene camera'''
-    bl_idname = "ADD_CAMERA_RIGS_OT_SetSceneCamera"
+    bl_idname = "ADD_CAMERA_RIGS_OT_set_scene_camera"
     bl_label = "Make Camera Active"
 
     @classmethod
@@ -51,7 +51,7 @@ def markerBind():
 
 class AddMarkerBind(Operator):
     '''Add marker to current frame then bind rig camera to it (for camera switching)'''
-    bl_idname = "ADD_CAMERA_RIGS_OT_AddMarkerBind"
+    bl_idname = "ADD_CAMERA_RIGS_OT_add_marker_bind"
     bl_label = "Add Marker and Bind Camera"
 
     @classmethod
@@ -101,8 +101,8 @@ def add_DOF_object():
 
 
 class AddDofObject(Operator):
-    """Create empty and add as DOF Object"""
-    bl_idname = "ADD_CAMERA_RIGS_OT_add.dof_object"
+    """Create Empty and add as DOF Object"""
+    bl_idname = "ADD_CAMERA_RIGS_OT_add_dof_object"
     bl_label = "Add DOF Object"
 
     @classmethod
@@ -112,3 +112,26 @@ class AddDofObject(Operator):
     def execute(self, context):
         add_DOF_object()
         return {'FINISHED'}
+
+
+classes = (
+    ADD_CAMERA_RIGS_OT_set_scene_camera,
+    ADD_CAMERA_RIGS_OT_add_marker_bind,
+    ADD_CAMERA_RIGS_OT_add_dof_object,
+)
+
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in classes:
+        unregister_class(cls)
+
+
+if __name__ == "__main__":
+    register()

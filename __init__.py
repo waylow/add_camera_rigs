@@ -11,31 +11,29 @@ bl_info = {
     "category": "Camera",
 }
 
-
 import bpy
 import os
 
 from . import build_rigs
-from . import operators
-from . import ui_panels
+#from . import operators
+#from . import ui_panels
 
 # =========================================================================
 # Registration:
 # =========================================================================
 
+
 def register():
-    bpy.utils.register_module(__name__)
     build_rigs.register()
-    operators.register()
-    ui_panels.register()
+    #operators.register()
+    #ui_panels.register()
 
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
     build_rigs.unregister()
-    operators.unregister()
-    ui_panels.unregister()
-'''
+    #operators.unregister()
+    #ui_panels.unregister()
+
+
 if __name__ == "__main__":
     register()
-'''

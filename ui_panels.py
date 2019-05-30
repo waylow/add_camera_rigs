@@ -1,10 +1,11 @@
 import bpy
 
 
-class ADD_CAMERA_RIGS_PT_DollyCameraUI(bpy.types.Panel):
+class DollyCameraUI(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_label = "Dolly Camera UI"
+    bl_idname = "ADD_CAMERA_RIGS_PT_dolly_camera_ui"
 
     @classmethod
     def poll(self, context):
@@ -64,6 +65,7 @@ class ADD_CAMERA_RIGS_OT_CraneCameraUI(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_label = "Crane Camera UI"
+    bl_idname = "ADD_CAMERA_RIGS_PT_crane_camera_ui"
 
     @classmethod
     def poll(self, context):
@@ -140,9 +142,8 @@ def add_dolly_button(self, context):
             text="Dolly Camera Rig",
             icon='CAMERA_DATA')
 
+
 # crane button in Armature menu
-
-
 def add_crane_button(self, context):
     if context.mode == 'OBJECT':
         self.layout.operator(
