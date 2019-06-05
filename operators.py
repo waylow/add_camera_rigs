@@ -1,4 +1,5 @@
 import bpy
+from bpy.types import Operator
 
 
 def set_scene_camera():
@@ -15,9 +16,9 @@ def set_scene_camera():
         return None
 
 
-class SetSceneCamera(Operator):
+class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
     '''Makes the camera parented to this rig the active scene camera'''
-    bl_idname = "ADD_CAMERA_RIGS_OT_set_scene_camera"
+    bl_idname = "add_camera_rigs.set_scene_camera"
     bl_label = "Make Camera Active"
 
     @classmethod
@@ -49,9 +50,9 @@ def markerBind():
     bpy.context.area.type = 'VIEW_3D'
 
 
-class AddMarkerBind(Operator):
+class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator):
     '''Add marker to current frame then bind rig camera to it (for camera switching)'''
-    bl_idname = "ADD_CAMERA_RIGS_OT_add_marker_bind"
+    bl_idname = "add_camera_rigs.add_marker_bind"
     bl_label = "Add Marker and Bind Camera"
 
     @classmethod
@@ -62,12 +63,9 @@ class AddMarkerBind(Operator):
         markerBind()
         return {'FINISHED'}
 
-# =========================================================================
-# Define the function to add an Empty as DOF object
-# =========================================================================
-
 
 def add_DOF_object():
+    """Define the function to add an Empty as DOF object """
     smode = bpy.context.mode
     rig = bpy.context.active_object
     bone = rig.data.bones['AIM_child']
@@ -100,9 +98,9 @@ def add_DOF_object():
     bpy.ops.object.mode_set(mode=smode, toggle=False)
 
 
-class AddDofObject(Operator):
+class ADD_CAMERA_RIGS_OT_add_dof_object(Operator):
     """Create Empty and add as DOF Object"""
-    bl_idname = "ADD_CAMERA_RIGS_OT_add_dof_object"
+    bl_idname = "add_camera_rigs.add_dof_object"
     bl_label = "Add DOF Object"
 
     @classmethod
@@ -131,7 +129,3 @@ def unregister():
     from bpy.utils import unregister_class
     for cls in classes:
         unregister_class(cls)
-
-
-if __name__ == "__main__":
-    register()

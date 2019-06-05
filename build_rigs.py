@@ -2,18 +2,11 @@ import bpy
 from bpy.types import Operator
 from rna_prop_ui import rna_idprop_ui_prop_get
 from math import radians
-import create_widget
-import create_root_widget
-import create_camera_widget
-import create_aim_widget
-
-# =========================================================================
-# Define the function to build the Dolly Rig
-# =========================================================================
 
 
 def build_dolly_rig(context):
-    # Define some useful variables:
+    """Operator to build the dolly rig """
+    #
     boneLayer = (False, True, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False,
@@ -173,9 +166,9 @@ def build_dolly_rig(context):
 # =========================================================================
 
 
-class BuildDollyRig(Operator):
+class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
     """Build a Camera Dolly Rig"""
-    bl_idname = "ADD_CAMERA_RIGS_OT_build_dolly_rig"
+    bl_idname = "add_camera_rigs.build_dolly_rig"
     bl_label = "Build Dolly Camera Rig"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -378,9 +371,9 @@ def build_crane_rig(context):
 # =========================================================================
 # This is the operator that will call all the functions and build the crane rig
 # =========================================================================
-class BuildCraneRig(Operator):
+class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
     """Build a Camera Crane Rig"""
-    bl_idname = "ADD_CAMERA_RIGS_OT_build_crane_rig"
+    bl_idname = "add_camera_rigs.build_crane_rig"
     bl_label = "Build Crane Camera Rig"
     bl_options = {'REGISTER', 'UNDO'}
 

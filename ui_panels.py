@@ -1,11 +1,11 @@
 import bpy
+from bpy.types import Panel
 
 
-class DollyCameraUI(bpy.types.Panel):
+class ADD_CAMERA_RIGS_PT_dolly_camera_ui(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_label = "Dolly Camera UI"
-    bl_idname = "ADD_CAMERA_RIGS_PT_dolly_camera_ui"
 
     @classmethod
     def poll(self, context):
@@ -61,11 +61,10 @@ class DollyCameraUI(bpy.types.Panel):
         col.prop(pose_bones["CTRL"], '["Lock"]', text="Aim Lock", slider=True)
 
 
-class ADD_CAMERA_RIGS_OT_CraneCameraUI(bpy.types.Panel):
+class ADD_CAMERA_RIGS_PT_crane_camera_ui(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_label = "Crane Camera UI"
-    bl_idname = "ADD_CAMERA_RIGS_PT_crane_camera_ui"
 
     @classmethod
     def poll(self, context):
@@ -133,30 +132,47 @@ class ADD_CAMERA_RIGS_OT_CraneCameraUI(bpy.types.Panel):
         col.prop(pose_bones["Height"], 'scale', index=1, text="Arm Height")
         col.prop(pose_bones["Crane_Arm"], 'scale', index=1, text="Arm Length")
 
+# =========================================================================
+# Registration:
+# =========================================================================
+# dolly and crane entries in the Add Object > Camera Menu
 
-# dolly button in Armature menu
-def add_dolly_button(self, context):
+
+def add_dolly_crane_buttons(self, context):
     if context.mode == 'OBJECT':
         self.layout.operator(
-            BuildDollyRig.bl_idname,
+            ADD_CAMERA_RIGS_OT_build_dolly_rig.bl_idname,
             text="Dolly Camera Rig",
-            icon='CAMERA_DATA')
-
-
-# crane button in Armature menu
-def add_crane_button(self, context):
-    if context.mode == 'OBJECT':
+            icon='CAMERA_DATA'
+        )
         self.layout.operator(
-            BuildCraneRig.bl_idname,
+            ADD_CAMERA_RIGS_OT_build_crane_rig.bl_idname,
             text="Crane Camera Rig",
-            icon='CAMERA_DATA')
+            icon='CAMERA_DATA'
+        )
+
+
+classes = (
+    ADD_CAMERA_RIGS_PT_dolly_camera_ui,
+    ADD_CAMERA_RIGS_PT_crane_camera_ui,
+)
 
 
 def register():
-    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_button)
-    bpy.types.VIEW3D_MT_camera_add.append(add_crane_button)
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_crane_buttons)
 
 
 def unregister():
-    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_button)
-    bpy.types.VIEW3D_MT_camera_add.remove(add_crane_button)
+    from bpy.utils import unregister_class
+    for cls in classes:
+        unregister_class(cls)
+
+    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_crane_buttons)
+
+
+if __name__ == "__main__":
+    register()
