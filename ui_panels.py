@@ -135,21 +135,6 @@ class ADD_CAMERA_RIGS_PT_crane_camera_ui(Panel):
 # =========================================================================
 # Registration:
 # =========================================================================
-# dolly and crane entries in the Add Object > Camera Menu
-
-
-def add_dolly_crane_buttons(self, context):
-    if context.mode == 'OBJECT':
-        self.layout.operator(
-            ADD_CAMERA_RIGS_OT_build_dolly_rig.bl_idname,
-            text="Dolly Camera Rig",
-            icon='CAMERA_DATA'
-        )
-        self.layout.operator(
-            ADD_CAMERA_RIGS_OT_build_crane_rig.bl_idname,
-            text="Crane Camera Rig",
-            icon='CAMERA_DATA'
-        )
 
 
 classes = (
@@ -163,15 +148,11 @@ def register():
     for cls in classes:
         register_class(cls)
 
-    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_crane_buttons)
-
 
 def unregister():
     from bpy.utils import unregister_class
     for cls in classes:
         unregister_class(cls)
-
-    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_crane_buttons)
 
 
 if __name__ == "__main__":

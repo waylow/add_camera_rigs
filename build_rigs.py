@@ -2,6 +2,11 @@ import bpy
 from bpy.types import Operator
 from rna_prop_ui import rna_idprop_ui_prop_get
 from math import radians
+from .create_widgets import (create_root_widget,
+                             create_widget,
+                             create_camera_widget,
+                             create_aim_widget,
+                             )
 
 
 def build_dolly_rig(context):
@@ -95,7 +100,7 @@ def build_dolly_rig(context):
     prop["soft_max"] = prop["max"] = 1.0
 
     # Add Driver to Lock/Unlock Camera from Aim Target
-    rig = bpy.context.scene.objects.active
+    rig = bpy.context.view_layer.objects.active
     pose_bone = bpy.data.objects[rig.name].pose.bones['Ctrl']
 
     constraint = pose_bone.constraints["Track To"]
@@ -114,7 +119,11 @@ def build_dolly_rig(context):
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.camera_add(
-        view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
+        enter_editmode=False,
+        align='WORLD',
+        location=(0.0, 0.0, 0.0),
+        rotation=(0.0, 0.0, 0.0)
+    )
     cam = bpy.context.active_object
 
     # Name the Camera Object
@@ -130,7 +139,7 @@ def build_dolly_rig(context):
         cam.data.name = "Dolly_camera.000"
 
     cam_data_name = bpy.context.object.data.name
-    bpy.data.cameras[cam_data_name].draw_size = 1.0
+    bpy.data.cameras[cam_data_name].display_size = 1.0
     cam.rotation_euler[0] = 1.5708  # rotate the camera 90 degrees in x
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
@@ -155,9 +164,9 @@ def build_dolly_rig(context):
     bpy.context.object.hide_select = False
 
     # make the rig the active object before finishing
-    bpy.context.scene.objects.active = rig
-    cam.select = False
-    rig.select = True
+    bpy.context.view_layer.objects.active = rig
+    bpy.data.objects[cam.name].select_set(False)
+    bpy.data.objects[rig.name].select_set(True)
 
     return rig
 
@@ -302,7 +311,7 @@ def build_crane_rig(context):
     prop["soft_max"] = prop["max"] = 1.0
 
     # Add Driver to Lock/Unlock Camera from Aim Target
-    rig = bpy.context.scene.objects.active
+    rig = bpy.context.view_layer.objects.active
     pose_bone = bpy.data.objects[rig.name].pose.bones['Ctrl']
 
     constraint = pose_bone.constraints["Track To"]
@@ -321,7 +330,11 @@ def build_crane_rig(context):
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.camera_add(
-        view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
+        enter_editmode=False,
+        align='WORLD',
+        location=(0.0, 0.0, 0.0),
+        rotation=(0.0, 0.0, 0.0)
+    )
     cam = bpy.context.active_object
 
     # this will name the Camera Object
@@ -337,7 +350,7 @@ def build_crane_rig(context):
         cam.data.name = "Crane_camera.000"
 
     cam_data_name = bpy.context.object.data.name
-    bpy.data.cameras[cam_data_name].draw_size = 1.0
+    bpy.data.cameras[cam_data_name].display_size = 1.0
     cam.rotation_euler[0] = 1.5708  # rotate the camera 90 degrees in x
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
@@ -361,9 +374,9 @@ def build_crane_rig(context):
     bpy.context.object.hide_select = False
 
     # make the rig the active object before finishing
-    bpy.context.scene.objects.active = rig
-    cam.select = False
-    rig.select = True
+    bpy.context.view_layer.objects.active = rig
+    bpy.data.objects[cam.name].select_set(False)
+    bpy.data.objects[rig.name].select_set(True)
 
     return rig
 
@@ -387,6 +400,22 @@ class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
         build_crane_rig(context)
         return {'FINISHED'}
 
+# dolly and crane entries in the Add Object > Camera Menu
+
+
+def add_dolly_crane_buttons(self, context):
+    if context.mode == 'OBJECT':
+        self.layout.operator(
+            ADD_CAMERA_RIGS_OT_build_dolly_rig.bl_idname,
+            text="Dolly Camera Rig",
+            icon='CAMERA_DATA'
+        )
+        self.layout.operator(
+            ADD_CAMERA_RIGS_OT_build_crane_rig.bl_idname,
+            text="Crane Camera Rig",
+            icon='CAMERA_DATA'
+        )
+
 
 classes = (
     ADD_CAMERA_RIGS_OT_build_dolly_rig,
@@ -399,11 +428,15 @@ def register():
     for cls in classes:
         register_class(cls)
 
+    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_crane_buttons)
+
 
 def unregister():
     from bpy.utils import unregister_class
     for cls in classes:
         unregister_class(cls)
+
+    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_crane_buttons)
 
 
 if __name__ == "__main__":

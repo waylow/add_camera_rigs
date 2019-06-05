@@ -1,23 +1,29 @@
+import bpy
+
+
 def create_widget(self, name):
     """ Creates an empty widget object for a bone, and returns the object."""
     obj_name = "WDGT_" + name
     scene = bpy.context.scene
 
-    # Check if it already exists
-    if obj_name in scene.objects:
-        return None
+    mesh = bpy.data.meshes.new(obj_name)
+    obj = bpy.data.objects.new(obj_name, mesh)
+
+    # create a new collection for the wigets
+    collection_name = "camera_widgets"
+    c = bpy.data.collections.get(collection_name)
+    if c is not None:
+        c.objects.link(obj)
     else:
-        mesh = bpy.data.meshes.new(obj_name)
-        obj = bpy.data.objects.new(obj_name, mesh)
+        c = bpy.data.collections.new(collection_name)
+        c.hide_viewport = True
+        c.hide_render = True
 
-        WDGT_collection_name = 'WDGTS_Camera'
-        view_layer = context.view_layer
-        layer_collection = bpy.context.layer_collection
-        collection = layer_collection.collection
+        # link the collection
+        scene.collection.children.link(c)
+        c.objects.link(obj)
 
-        obj.move_to_collection = WDGT_layers
-
-        return obj
+    return obj
 
 
 def create_root_widget(self, name):
