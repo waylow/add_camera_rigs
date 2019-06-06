@@ -1,13 +1,14 @@
 TO DO:
--split file into components
-    __init__
-    build_rigs
-    create_widgets
-    ui_panels
+-The UI is not displaying
 
--fix the __init__.py so it works again
+
+-combine the ui like in Brian's version
+
+
+
 
 -get the collections working properly
+(make sure it checks if it already exists)
 
 -add preferences so the user can set their own naming convention (for collections
 and widgets)

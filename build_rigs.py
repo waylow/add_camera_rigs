@@ -118,12 +118,7 @@ def build_dolly_rig(context):
     # Add the camera object:
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    bpy.ops.object.camera_add(
-        enter_editmode=False,
-        align='WORLD',
-        location=(0.0, 0.0, 0.0),
-        rotation=(0.0, 0.0, 0.0)
-    )
+    bpy.ops.object.camera_add()
     cam = bpy.context.active_object
 
     # Name the Camera Object
@@ -140,13 +135,14 @@ def build_dolly_rig(context):
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].display_size = 1.0
-    cam.rotation_euler[0] = 1.5708  # rotate the camera 90 degrees in x
+    cam.rotation_euler = [1.5708, 0, 0]  # rotate the camera 90 degrees in x
+
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
     cam.parent_type = "BONE"
     cam.parent_bone = "Ctrl"
 
-    # Add blank drivers to lock the camera loc, rot scale
+    # Add blank drivers to lock the camera loc, rot, scale
     cam.driver_add('location', 0)
     cam.driver_add('location', 1)
     cam.driver_add('location', 2)
@@ -259,9 +255,9 @@ def build_crane_rig(context):
     ctrlAimChild.parent = ctrlAim
 
     # change display to BBone: it just looks nicer
-    bpy.context.object.data.draw_type = 'BBONE'
+    bpy.context.object.data.display_type = 'BBONE'
     # change display to wire for object
-    bpy.context.object.draw_type = 'WIRE'
+    bpy.context.object.display_type = 'WIRE'
 
     # jump into pose mode and change bones to euler
     bpy.ops.object.mode_set(mode='POSE')
@@ -329,12 +325,7 @@ def build_crane_rig(context):
     # Add the camera object:
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    bpy.ops.object.camera_add(
-        enter_editmode=False,
-        align='WORLD',
-        location=(0.0, 0.0, 0.0),
-        rotation=(0.0, 0.0, 0.0)
-    )
+    bpy.ops.object.camera_add()
     cam = bpy.context.active_object
 
     # this will name the Camera Object
@@ -351,7 +342,7 @@ def build_crane_rig(context):
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].display_size = 1.0
-    cam.rotation_euler[0] = 1.5708  # rotate the camera 90 degrees in x
+    cam.rotation_euler = [1.5708, 0, 0]  # rotate the camera 90 degrees in x
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
     cam.parent_type = "BONE"
