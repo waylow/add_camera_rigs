@@ -33,6 +33,7 @@ class VIEW3D_PT_dolly_camera_ui(Panel):
         col.prop(cam, "clip_start", text="Start")
         col.prop(cam, "clip_end", text="End")
         col.prop(cam, "type")
+        col.prop(cam.dof, "use_dof")
 #        col.prop(cam, "dof_object")
 
 #        if cam.dof_object is None:
@@ -62,7 +63,7 @@ class VIEW3D_PT_dolly_camera_ui(Panel):
 
         # Track to Constraint
         col.label(text="Tracking:")
-        col.prop(pose_bones["CTRL"], '["Lock"]', text="Aim Lock", slider=True)
+        col.prop(pose_bones["Camera"], '["lock"]', text="Aim Lock", slider=True)
 
 
 # =========================================================================
@@ -126,7 +127,7 @@ class VIEW3D_PT_crane_camera_ui(Panel):
 
         # Track to Constraint
         col.label(text="Tracking:")
-        col.prop(pose_bones["CTRL"], '["Lock"]', text="Aim Lock", slider=True)
+        col.prop(pose_bones["Camera"], '["lock"]', text="Aim Lock", slider=True)
 
         # make this camera active if more than one camera exists
         """
@@ -140,7 +141,7 @@ class VIEW3D_PT_crane_camera_ui(Panel):
 
         # Crane arm stuff
         col.label(text="Crane Arm:")
-        col.prop(pose_bones["Height"], 'scale', index=1, text="Arm Height")
+        col.prop(pose_bones["Crane_height"], 'scale', index=1, text="Arm Height")
         col.prop(pose_bones["Crane_Arm"], 'scale', index=1, text="Arm Length")
 
 # =========================================================================

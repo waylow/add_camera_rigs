@@ -1,11 +1,8 @@
 TO DO:
--The UI is not displaying
-
+-add the dof object
+-add the comp guides back
 
 -combine the ui like in Brian's version
-
-
-
 
 -get the collections working properly
 (make sure it checks if it already exists)
