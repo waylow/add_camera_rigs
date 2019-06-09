@@ -17,7 +17,7 @@ class Add_Camera_Rigs_Preferences(AddonPreferences):
     camera_widget_collection_name: StringProperty(
         name="Bone Widget collection name",
         description="Choose a name for the collection the widgets will appear",
-        default="Camera_WDGTS",
+        default="WDGTS_camera",
     )
 
     def draw(self, context):

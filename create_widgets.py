@@ -3,14 +3,15 @@ import bpy
 
 def create_widget(self, name):
     """ Creates an empty widget object and returns the object."""
-    obj_name = "WDGT_" + name
+    widget_prefix = bpy.context.preferences.addons["add_camera_rigs"].preferences.widget_prefix
+    obj_name = widget_prefix + name
     scene = bpy.context.scene
 
     mesh = bpy.data.meshes.new(obj_name)
     obj = bpy.data.objects.new(obj_name, mesh)
 
     # create a new collection for the wigets
-    collection_name = "camera_widgets"
+    collection_name = bpy.context.preferences.addons["add_camera_rigs"].preferences.camera_widget_collection_name
     c = bpy.data.collections.get(collection_name)
     if c is not None:
         c.objects.link(obj)
@@ -85,6 +86,7 @@ def create_root_widget(self, name):
         mesh = obj.data
         mesh.from_pydata(verts, edges, [])
         mesh.update()
+
 
 def create_camera_widget(self, name):
     """Creates a camera ctrl widget."""
