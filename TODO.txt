@@ -7,5 +7,4 @@ TO DO:
 -get the collections working properly
 (make sure it checks if it already exists)
 
--add preferences so the user can set their own naming convention (for collections
-and widgets)
+-add preferences so the user can set their own naming convention (for collections and widgets)
