@@ -373,7 +373,7 @@ class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
 
     def execute(self, context):
         # build the Widgets
-        create_root_widget(self, "Root")
+        create_root_widget(self, "Camera_root")
         create_camera_widget(self, "Camera")
         create_aim_widget(self, "Aim")
 
