@@ -13,6 +13,9 @@ bugtracking: https://developer.blender.org/maniphest/task/edit/form/2/
 ==========
 ==TO DO:==
 ==========
+-if the current collection is hidden it throws an error when you try to add a camera rig
+-if the objects don't exist but the data does it gets out of sync with the naming
+
 -add the comp guides back (it is different in 2.8)
 
 -maybe connect the camera lens and other settings to a custom property on the camera bone that way it can be animated on the rig instead of over 2 objects.

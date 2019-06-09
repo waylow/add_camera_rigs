@@ -1,7 +1,6 @@
 import bpy
 from bpy.types import Operator
 from rna_prop_ui import rna_idprop_ui_prop_get
-from math import radians
 from .create_widgets import (create_root_widget,
                              create_widget,
                              create_camera_widget,
@@ -127,11 +126,8 @@ def build_dolly_rig(context):
     else:
         cam.name = "Dolly_camera.000"
 
-    # this will name the camera Data Object
-    if "Dolly_camera" not in bpy.context.scene.objects.data.camera:
-        cam.data.name = "Dolly_camera"
-    else:
-        cam.data.name = "Dolly_camera.000"
+    #this will name the camera dat          a
+    cam.data.name = cam.name
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].display_size = 1.0
