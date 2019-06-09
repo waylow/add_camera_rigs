@@ -4,7 +4,8 @@ from bpy.types import Panel
 
 class cameraRigs(Panel):
     bl_idname = "CAMERARIGS_PT_cameraRigs"
-    bl_label = "Camera UI"
+    bl_category = 'Camera Rig'
+    bl_label = "Camera Rig UI"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
 
@@ -19,7 +20,7 @@ class cameraRigs(Panel):
         if self._ACTIVE_OBJECT != None and "rig_id" in self._ACTIVE_OBJECT:
             rigType = self._ACTIVE_OBJECT["rig_id"]
 
-            if rigType == "Dolly_Rig" or rigType == "Crane_Rig":
+            if rigType == "Dolly_rig" or rigType == "Crane_rig":
                 self._ACTIVE_RIG_TYPE = rigType
                 return True
 
