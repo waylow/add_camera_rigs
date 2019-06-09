@@ -13,12 +13,6 @@ bugtracking: https://developer.blender.org/maniphest/task/edit/form/2/
 ==========
 ==TO DO:==
 ==========
--check if the widgets already exist and don't create them if they do
--get the collections working properly
-(make sure it checks if it already exists)
-
 -add the comp guides back
 
 -maybe connect the camera lens and other settings to a custom property on the camera bone that way it can be animated on the rig instead of over 2 objects.
-
--add user preferences so the user can set their own naming convention (for collections and widgets)
