@@ -11,7 +11,7 @@ from .create_widgets import (create_root_widget,
 
 def build_dolly_rig(context):
     """Operator to build the dolly rig """
-    #
+    # Set the bone layers
     boneLayer = (False, True, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False,
@@ -166,10 +166,6 @@ def build_dolly_rig(context):
 
     return rig
 
-# =========================================================================
-# This is the operator that will call all the functions and build the dolly rig
-# =========================================================================
-
 
 class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
     """Build a Camera Dolly Rig"""
@@ -189,9 +185,6 @@ class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
         return {'FINISHED'}
 
 
-# =========================================================================
-# Define the function to build the Crane Rig
-# =========================================================================
 def build_crane_rig(context):
     # Define some useful variables:
     boneLayer = (False, True, False, False, False, False, False, False,
@@ -268,9 +261,9 @@ def build_crane_rig(context):
     bpy.context.object.pose.bones[
         "Crane_arm"].lock_rotation = [False, True, False]
     bpy.context.object.pose.bones["Crane_arm"].lock_scale = [True, False, True]
-    bpy.context.object.pose.bones["Height"].lock_location = [True, True, True]
-    bpy.context.object.pose.bones["Height"].lock_rotation = [True, True, True]
-    bpy.context.object.pose.bones["Height"].lock_scale = [True, False, True]
+    bpy.context.object.pose.bones["Crane_height"].lock_location = [True, True, True]
+    bpy.context.object.pose.bones["Crane_height"].lock_rotation = [True, True, True]
+    bpy.context.object.pose.bones["Crane_height"].lock_scale = [True, False, True]
 
     # add the custom bone shapes
     bpy.context.object.pose.bones["Root"].custom_shape = bpy.data.objects[
@@ -372,9 +365,6 @@ def build_crane_rig(context):
     return rig
 
 
-# =========================================================================
-# This is the operator that will call all the functions and build the crane rig
-# =========================================================================
 class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
     """Build a Camera Crane Rig"""
     bl_idname = "add_camera_rigs.build_crane_rig"

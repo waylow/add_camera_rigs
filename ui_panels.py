@@ -2,8 +2,7 @@ import bpy
 from bpy.types import Panel
 
 
-class cameraRigs(Panel):
-    bl_idname = "CAMERARIGS_PT_cameraRigs"
+class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
     bl_category = 'Camera Rig'
     bl_label = "Camera Rig UI"
     bl_space_type = 'VIEW_3D'
@@ -38,22 +37,21 @@ class cameraRigs(Panel):
         layout.prop(cam, "clip_start", text="Start")
         layout.prop(cam, "clip_end", text="End")
         layout.prop(cam, "type")
-        layout.prop(cam, "dof_object")
-
-        if cam.dof_object is None:
-            layout.operator("add.dof_object", text="Add DOF Empty")
-            layout.prop(cam, "dof_distance")
+        layout.prop(cam.dof, "use_dof")
+        if cam.dof.use_dof:
+            if cam.dof.focus_object is None:
+                layout.operator("add_camera_rigs.add_dof_object", text="Add DOF Empty")
+                layout.prop(cam.dof, "focus_distance")
 
         # added the comp guides here
-        layout.prop_menu_enum(cam, "show_guide", text="Compostion Guides")
+        #layout.prop_menu_enum(cam, "show_guide", text="Compostion Guides")
         layout.prop(bpy.data.objects[activeCameraName],
                     "hide_select", text="Make Camera Unselectable")
 
-        layout.operator("add.marker_bind", text="Add Marker and Bind")
-
+        layout.operator("add_camera_rigs.add_marker_bind", text="Add Marker and Bind")
         if bpy.context.scene.camera.name != activeCameraName:
-            layout.operator("scene.make_camera_active",
-                            text="Make Active Camera", icon='CAMERA_DATA')
+            layout.operator("add_camera_rigs.set_scene_camera",
+                            text="Make Camera Active", icon='CAMERA_DATA')
 
         layout.prop(self._ACTIVE_OBJECT, 'show_in_front', toggle=False, text='Show in front')
         layout.prop(cam, "show_limits")
@@ -65,22 +63,22 @@ class cameraRigs(Panel):
         layout.label(text="Focal Length:")
         layout.prop(cam, "lens", text="Angle")
 
-        # Track to Constraint
-        layout.label(text="Tracking:")
-        layout.prop(poseBones["Camera"], '["lock"]', text="Aim Lock", slider=True)
-
         if self._ACTIVE_RIG_TYPE == "Crane_rig":
             layout = layout.box().column()
 
             # Crane arm stuff
             layout.label(text="Crane Arm:")
             layout.prop(poseBones["Crane_height"], 'scale', index=1, text="Arm Height")
-            layout.prop(poseBones["Crane_Arm"], 'scale', index=1, text="Arm Length")
+            layout.prop(poseBones["Crane_arm"], 'scale', index=1, text="Arm Length")
+
+        # Track to Constraint
+        layout.label(text="Tracking:")
+        layout.prop(poseBones["Camera"], '["lock"]', text="Aim Lock", slider=True)
 
 
 def register():
-    bpy.utils.register_class(cameraRigs)
+    bpy.utils.register_class(ADD_CAMERA_RIGS_PT_camera_rig_ui)
 
 
 def unregister():
-    bpy.utils.unregister_class(cameraRigs)
+    bpy.utils.unregister_class(ADD_CAMERA_RIGS_PT_camera_rig_ui)

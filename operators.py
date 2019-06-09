@@ -32,20 +32,21 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
 def markerBind():
     '''Defines the function to add a marker to timeling and bind camera'''
-    ob = bpy.context.active_object  # rig object
-    active_cam = ob.children[0]  # camera object
+    rig = bpy.context.active_object  # rig object
+    active_cam = rig.children[0]  # camera object
 
-    # switch area to timeline to add marker
-    bpy.context.area.type = 'TIMELINE'
+    # switch area to DOPESHEET to add marker
+    bpy.context.area.type = 'DOPESHEET_EDITOR'
     # add marker
-    bpy.ops.marker.add()
-    bpy.ops.marker.rename(name="cam_" + str(bpy.context.scene.frame_current))
+    bpy.ops.marker.add()  # it will automatiically have the name of the camera
     # select rig camera
-    bpy.context.scene.objects.active = active_cam
+    bpy.context.view_layer.objects.active = active_cam
     # bind marker to selected camera
     bpy.ops.marker.camera_bind()
-    # switch selected object back to the rig
-    bpy.context.scene.objects.active = ob
+    # make the rig the active object before finishing
+    bpy.context.view_layer.objects.active = rig
+    bpy.data.objects[active_cam.name].select_set(False)
+    bpy.data.objects[rig.name].select_set(True)
     # switch back to 3d view
     bpy.context.area.type = 'VIEW_3D'
 
@@ -68,7 +69,7 @@ def add_DOF_object():
     """Define the function to add an Empty as DOF object """
     smode = bpy.context.mode
     rig = bpy.context.active_object
-    bone = rig.data.bones['AIM_child']
+    bone = rig.data.bones['aim_MCH']
     active_cam = rig.children[0].name
     cam = bpy.data.cameras[bpy.data.objects[active_cam].data.name]
 
@@ -78,10 +79,10 @@ def add_DOF_object():
     obj = bpy.context.active_object
 
     obj.name = "Empty_DOF"
-    # parent to AIM_Child
+    # parent to aim_MCH
     obj.parent = rig
     obj.parent_type = "BONE"
-    obj.parent_bone = "AIM_child"
+    obj.parent_bone = "aim_MCH"
     # clear loc and rot
     bpy.ops.object.location_clear()
     bpy.ops.object.rotation_clear()
@@ -89,11 +90,12 @@ def add_DOF_object():
     obj.location = bone.head
 
     # make this new empty the dof_object
-    cam.dof_object = obj
-    # reselect the rig
-    bpy.context.scene.objects.active = rig
-    obj.select = False
-    rig.select = True
+    cam.dof.focus_object = obj
+
+    # make the rig the active object before finishing
+    bpy.context.view_layer.objects.active = rig
+    bpy.data.objects[obj.name].select_set(False)
+    bpy.data.objects[rig.name].select_set(True)
 
     bpy.ops.object.mode_set(mode=smode, toggle=False)
 
