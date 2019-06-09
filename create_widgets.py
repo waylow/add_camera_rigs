@@ -2,7 +2,7 @@ import bpy
 
 
 def create_widget(self, name):
-    """ Creates an empty widget object for a bone, and returns the object."""
+    """ Creates an empty widget object and returns the object."""
     obj_name = "WDGT_" + name
     scene = bpy.context.scene
 
@@ -27,7 +27,7 @@ def create_widget(self, name):
 
 
 def create_root_widget(self, name):
-    """ Creates a compass-shaped widget."""
+    """Creates a compass-shaped widget."""
     obj = create_widget(self, name)
     if obj != None:
         verts = [(0.2102552056312561, -0.0012103617191314697, 0.21025514602661133),
@@ -85,7 +85,6 @@ def create_root_widget(self, name):
         mesh = obj.data
         mesh.from_pydata(verts, edges, [])
         mesh.update()
-
 
 def create_camera_widget(self, name):
     """Creates a camera ctrl widget."""
@@ -169,7 +168,7 @@ def create_camera_widget(self, name):
 
 
 def create_aim_widget(self, name):
-    """ Creates a camera aim widget."""
+    """Creates a camera aim widget."""
 
     obj = create_widget(self, name)
     if obj != None:

@@ -174,11 +174,13 @@ class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-
         # build the Widgets
-        create_root_widget(self, "Camera_root")
-        create_camera_widget(self, "Camera")
-        create_aim_widget(self, "Aim")
+        if not "WDGT_Camera_root" in bpy.context.scene.objects:
+            create_root_widget(self, "Camera_root")
+        if not "WDGT_Camera" in bpy.context.scene.objects:
+            create_camera_widget(self, "Camera")
+        if not "WDGT_Aim" in bpy.context.scene.objects:
+            create_aim_widget(self, "Aim")
 
         # call the function to build the rig
         build_dolly_rig(context)
@@ -373,17 +375,19 @@ class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
 
     def execute(self, context):
         # build the Widgets
-        create_root_widget(self, "Camera_root")
-        create_camera_widget(self, "Camera")
-        create_aim_widget(self, "Aim")
+        if not "WDGT_Camera_root" in bpy.context.scene.objects:
+            create_root_widget(self, "Camera_root")
+        if not "WDGT_Camera" in bpy.context.scene.objects:
+            create_camera_widget(self, "Camera")
+        if not "WDGT_Aim" in bpy.context.scene.objects:
+            create_aim_widget(self, "Aim")
 
         # call the function to build the rig
         build_crane_rig(context)
         return {'FINISHED'}
 
+
 # dolly and crane entries in the Add Object > Camera Menu
-
-
 def add_dolly_crane_buttons(self, context):
     if context.mode == 'OBJECT':
         self.layout.operator(
