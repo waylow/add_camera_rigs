@@ -140,7 +140,7 @@ def build_dolly_rig(context):
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].display_size = 1.0
-    cam.rotation_euler = [1.5708, 0, 0]  # rotate the camera 90 degrees in x
+    cam.rotation_euler = [radians(90), 0, 0]  # rotate the camera 90 degrees in x
 
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
@@ -161,17 +161,9 @@ def build_dolly_rig(context):
     lens_driver.driver.expression = 'var'
 
     # lock the location/rotation/scale of the camera
-    cam.lock_location[0] = True
-    cam.lock_location[1] = True
-    cam.lock_location[2] = True
-
-    cam.lock_rotation[0] = True
-    cam.lock_rotation[1] = True
-    cam.lock_rotation[2] = True
-
-    cam.lock_scale[0] = True
-    cam.lock_scale[1] = True
-    cam.lock_scale[2] = True
+    cam.lock_location = [True, True, True]
+    cam.lock_rotation = [True, True, True]
+    cam.lock_scale = [True, True, True]
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam
@@ -337,6 +329,14 @@ def build_crane_rig(context):
     var.targets[0].data_path = 'pose.bones["Camera"]["lock"]'
     inf_driver.driver.expression = 'var'
 
+    # Add custom property for the lens / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "focal_length", create=True)
+    ob["focal_length"] = 50.0
+    prop["soft_min"] = prop["min"] = 1.0
+    prop["default"] = 50.0
+    prop["soft_max"] = prop["max"] = 5000.0
+
     # Add the camera object:
     bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -363,18 +363,23 @@ def build_crane_rig(context):
     cam.parent_type = "BONE"
     cam.parent_bone = "Camera"
 
-    # lock the location/rotation/scale of the camera
-    cam.lock_location[0] = True
-    cam.lock_location[1] = True
-    cam.lock_location[2] = True
+    # Add Driver to link the camera lens to the custom property on the armature
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Camera']
+    lens_driver = cam.data.driver_add("lens")
+    lens_driver.driver.type = 'SCRIPTED'
+    var = lens_driver.driver.variables.new()
+    var.name = 'var'
+    var.type = 'SINGLE_PROP'
 
-    cam.lock_rotation[0] = True
-    cam.lock_rotation[1] = True
-    cam.lock_rotation[2] = True
+    # Target the Custom bone property
+    var.targets[0].id = bpy.data.objects[rig.name]
+    var.targets[0].data_path = 'pose.bones["Camera"]["focal_length"]'
+    lens_driver.driver.expression = 'var'
 
-    cam.lock_scale[0] = True
-    cam.lock_scale[1] = True
-    cam.lock_scale[2] = True
+    #  the location/rotation/scale of the camera
+    cam.lock_location = [True, True, True]
+    cam.lock_rotation = [True, True, True]
+    cam.lock_scale = [True, True, True]
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam

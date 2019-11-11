@@ -18,6 +18,10 @@ NOTES:
 ==========
 ==TO DO:==
 ==========
+-add focal distance driver
+-add f-stopdriver
+ to the rig(s) just like the focal Length
+ 
 -see if the devs can change it so you can use a bone to drive the focal_distance
 
 Bugs:
