@@ -1,5 +1,6 @@
 import bpy
 from bpy.types import Operator
+from math import radians
 from rna_prop_ui import rna_idprop_ui_prop_get
 from .create_widgets import (create_root_widget,
                              create_widget,
