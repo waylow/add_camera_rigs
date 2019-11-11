@@ -13,14 +13,12 @@ bugtracking: https://github.com/waylow/add_camera_rigs/issues
 
 NOTES:
 -I added the comp guides back
-
+-the lens is now controlled by the rig and not the camera
 
 ==========
 ==TO DO:==
 ==========
--maybe connect the camera lens and other settings to a custom property on the camera bone that way it can be animated on the rig instead of over 2 objects.
-
--see if the devs can change it so you can use a bone to drive the focus_distance
+-see if the devs can change it so you can use a bone to drive the focal_distance
 
 Bugs:
 -if the current collection is hidden it throws an error when you try to add a camera rig

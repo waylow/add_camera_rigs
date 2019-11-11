@@ -65,7 +65,7 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
                             text="Make Camera Active", icon='CAMERA_DATA')
         # Camera Lens
         layout.label(text="Focal Length:")
-        layout.prop(cam, "lens", text="Angle")
+        layout.prop(poseBones["Camera"], '["focal_length"]', text="Focal Length")
 
         if self._ACTIVE_RIG_TYPE == "Crane_rig":
             layout = layout.box().column()
