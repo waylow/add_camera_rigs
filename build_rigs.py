@@ -126,7 +126,7 @@ def build_dolly_rig(context):
     else:
         cam.name = "Dolly_camera.000"
 
-    #this will name the camera dat          a
+    # this will name the camera data
     cam.data.name = cam.name
 
     cam_data_name = bpy.context.object.data.name
@@ -137,17 +137,6 @@ def build_dolly_rig(context):
     cam.parent = rig
     cam.parent_type = "BONE"
     cam.parent_bone = "Camera"
-
-    # Add blank drivers to lock the camera loc, rot, scale
-    cam.driver_add('location', 0)
-    cam.driver_add('location', 1)
-    cam.driver_add('location', 2)
-    cam.driver_add('rotation_euler', 0)
-    cam.driver_add('rotation_euler', 1)
-    cam.driver_add('rotation_euler', 2)
-    cam.driver_add('scale', 0)
-    cam.driver_add('scale', 1)
-    cam.driver_add('scale', 2)
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam
@@ -338,16 +327,6 @@ def build_crane_rig(context):
     cam.parent = rig
     cam.parent_type = "BONE"
     cam.parent_bone = "Camera"
-    # Add blank drivers to lock the camera loc, rot scale
-    cam.driver_add('location', 0)
-    cam.driver_add('location', 1)
-    cam.driver_add('location', 2)
-    cam.driver_add('rotation_euler', 0)
-    cam.driver_add('rotation_euler', 1)
-    cam.driver_add('rotation_euler', 2)
-    cam.driver_add('scale', 0)
-    cam.driver_add('scale', 1)
-    cam.driver_add('scale', 2)
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam
