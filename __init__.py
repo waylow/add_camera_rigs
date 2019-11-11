@@ -5,7 +5,7 @@ bl_info = {
     "blender": (2, 80, 0),
     "location": "View3D > Add > Camera > Dolly or Crane Rig",
     "description": "Adds a Camera Rig with UI",
-    "tracker_url": "https://developer.blender.org/maniphest/task/edit/form/2/",
+    "tracker_url": "https://github.com/waylow/add_camera_rigs/issues",
     "category": "Camera",
 }
 

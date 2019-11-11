@@ -139,6 +139,19 @@ def build_dolly_rig(context):
     cam.parent_type = "BONE"
     cam.parent_bone = "Camera"
 
+    # lock the location/rotation/scale of the camera
+    cam.lock_location[0] = True
+    cam.lock_location[1] = True
+    cam.lock_location[2] = True
+
+    cam.lock_rotation[0] = True
+    cam.lock_rotation[1] = True
+    cam.lock_rotation[2] = True
+
+    cam.lock_scale[0] = True
+    cam.lock_scale[1] = True
+    cam.lock_scale[2] = True
+
     # Set new camera as active camera
     bpy.context.scene.camera = cam
 
@@ -323,11 +336,24 @@ def build_crane_rig(context):
 
     cam_data_name = bpy.context.object.data.name
     bpy.data.cameras[cam_data_name].display_size = 1.0
-    cam.rotation_euler = [1.5708, 0, 0]  # rotate the camera 90 degrees in x
+    cam.rotation_euler = [radians(90), 0, 0]  # rotate the camera 90 degrees in x
     cam.location = (0.0, -2.0, 0.0)  # move the camera to the correct postion
     cam.parent = rig
     cam.parent_type = "BONE"
     cam.parent_bone = "Camera"
+
+    # lock the location/rotation/scale of the camera
+    cam.lock_location[0] = True
+    cam.lock_location[1] = True
+    cam.lock_location[2] = True
+
+    cam.lock_rotation[0] = True
+    cam.lock_rotation[1] = True
+    cam.lock_rotation[2] = True
+
+    cam.lock_scale[0] = True
+    cam.lock_scale[1] = True
+    cam.lock_scale[2] = True
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam
