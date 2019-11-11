@@ -18,7 +18,11 @@ NOTES:
 ==========
 ==TO DO:==
 ==========
--reorder the ui
+-lock the camera loc/rot/scale
+-add properties like clip/lens and anything that you want to animated
+to the armature so it can end up in the armature action not 2 animation data blocks
+
+-see if the devs can change it so you can use a bone to drive the focus_distance
 
 Bugs:
 -if the current collection is hidden it throws an error when you try to add a camera rig

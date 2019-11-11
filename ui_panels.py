@@ -43,25 +43,26 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
                 layout.operator("add_camera_rigs.add_dof_object", text="Add DOF Empty")
                 layout.prop(cam.dof, "focus_distance")
 
-        # added the comp guides here
-        layout.operator(
-            "wm.call_menu", text="Composition Guides").name = "ADD_CAMERA_RIGS_MT_composition_guides_menu"
-
-        layout.prop(bpy.data.objects[activeCameraName],
-                    "hide_select", text="Make Camera Unselectable")
-
-        layout.operator("add_camera_rigs.add_marker_bind", text="Add Marker and Bind")
-        if bpy.context.scene.camera.name != activeCameraName:
-            layout.operator("add_camera_rigs.set_scene_camera",
-                            text="Make Camera Active", icon='CAMERA_DATA')
-
         layout.prop(self._ACTIVE_OBJECT, 'show_in_front', toggle=False, text='Show in front')
         layout.prop(cam, "show_limits")
-        layout.prop(cam, "show_safe_areas")
         layout.prop(cam, "show_passepartout")
         if cam.show_passepartout:
             layout.prop(cam, "passepartout_alpha")
 
+        layout.row().separator()
+        # added the comp guides here
+        layout.operator(
+            "wm.call_menu", text="Composition Guides").name = "ADD_CAMERA_RIGS_MT_composition_guides_menu"
+        layout.row().separator()
+
+        layout.prop(bpy.data.objects[activeCameraName],
+                    "hide_select", text="Make Camera Unselectable")
+
+        layout.operator("add_camera_rigs.add_marker_bind",
+                        text="Add Marker and Bind")
+        if bpy.context.scene.camera.name != activeCameraName:
+            layout.operator("add_camera_rigs.set_scene_camera",
+                            text="Make Camera Active", icon='CAMERA_DATA')
         # Camera Lens
         layout.label(text="Focal Length:")
         layout.prop(cam, "lens", text="Angle")

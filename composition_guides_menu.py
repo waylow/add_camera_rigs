@@ -20,6 +20,8 @@ class ADD_CAMERA_RIGS_MT_composition_guides_menu(Menu):
         layout.prop(cam, "show_composition_harmony_tri_a")
         layout.prop(cam, "show_composition_harmony_tri_b")
         layout.prop(cam, "show_composition_thirds")
+        layout.row().separator()
+        layout.prop(cam, "show_safe_areas")
 
 
 def draw_item(self, context):
