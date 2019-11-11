@@ -3,7 +3,7 @@ from bpy.types import Menu
 
 
 class ADD_CAMERA_RIGS_MT_composition_guides_menu(Menu):
-    bl_label = "Composition Guides Menu"
+    bl_label = "Composition Guides"
     bl_idname = "ADD_CAMERA_RIGS_MT_composition_guides_menu"
 
     def draw(self, context):

@@ -47,15 +47,6 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
         layout.operator(
             "wm.call_menu", text="Composition Guides").name = "ADD_CAMERA_RIGS_MT_composition_guides_menu"
 
-        #layout.prop(cam, "show_composition_center")
-        #layout.prop(cam, "show_composition_center_diagonal")
-        #layout.prop(cam, "show_composition_golden")
-        #layout.prop(cam, "show_composition_golden_tria_a")
-        #layout.prop(cam, "show_composition_golden_tria_b")
-        #layout.prop(cam, "show_composition_harmony_tri_a")
-        #layout.prop(cam, "show_composition_harmony_tri_b")
-        #layout.prop(cam, "show_composition_thirds")
-
         layout.prop(bpy.data.objects[activeCameraName],
                     "hide_select", text="Make Camera Unselectable")
 
@@ -68,7 +59,8 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
         layout.prop(cam, "show_limits")
         layout.prop(cam, "show_safe_areas")
         layout.prop(cam, "show_passepartout")
-        layout.prop(cam, "passepartout_alpha")
+        if cam.show_passepartout:
+            layout.prop(cam, "passepartout_alpha")
 
         # Camera Lens
         layout.label(text="Focal Length:")

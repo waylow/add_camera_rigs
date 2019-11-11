@@ -10,10 +10,15 @@ Old wikipage: http://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Riggin
 bugtracking: https://developer.blender.org/maniphest/task/edit/form/2/
 
 
+
+NOTES:
+-I added the comp guides back
+
+
 ==========
 ==TO DO:==
 ==========
--add the comp guides back (it is different in 2.8)
+-reorder the ui
 
 Bugs:
 -if the current collection is hidden it throws an error when you try to add a camera rig
