@@ -12,6 +12,8 @@ class ADD_CAMERA_RIGS_MT_composition_guides_menu(Menu):
         activeCameraName = bpy.context.active_object.children[0].name
         cam = bpy.data.cameras[bpy.data.objects[activeCameraName].data.name]
 
+        layout.prop(cam, "show_safe_areas")
+        layout.row().separator()
         layout.prop(cam, "show_composition_center")
         layout.prop(cam, "show_composition_center_diagonal")
         layout.prop(cam, "show_composition_golden")
@@ -20,8 +22,6 @@ class ADD_CAMERA_RIGS_MT_composition_guides_menu(Menu):
         layout.prop(cam, "show_composition_harmony_tri_a")
         layout.prop(cam, "show_composition_harmony_tri_b")
         layout.prop(cam, "show_composition_thirds")
-        layout.row().separator()
-        layout.prop(cam, "show_safe_areas")
 
 
 def draw_item(self, context):
