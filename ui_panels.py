@@ -41,7 +41,8 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
         if cam.dof.use_dof:
             if cam.dof.focus_object is None:
                 layout.operator("add_camera_rigs.add_dof_object", text="Add DOF Empty")
-                layout.prop(cam.dof, "focus_distance")
+            layout.prop(poseBones["Camera"], '["focus_distance"]', text="Focus Distance")
+            layout.prop(poseBones["Camera"], '["f-stop"]', text="F-Stop")
 
         layout.prop(self._ACTIVE_OBJECT, 'show_in_front', toggle=False, text='Show in front')
         layout.prop(cam, "show_limits")
@@ -65,7 +66,7 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel):
                             text="Make Camera Active", icon='CAMERA_DATA')
         # Camera Lens
         layout.label(text="Focal Length:")
-        layout.prop(poseBones["Camera"], '["focal_length"]', text="Focal Length")
+        layout.prop(poseBones["Camera"], '["focal_length"]', text="Focal Length (mm)")
 
         if self._ACTIVE_RIG_TYPE == "Crane_rig":
             layout = layout.box().column()

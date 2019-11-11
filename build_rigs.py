@@ -123,6 +123,20 @@ def build_dolly_rig(context):
     prop["default"] = 50.0
     prop["soft_max"] = prop["max"] = 5000.0
 
+    # Add custom property for the focus distance / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "focus_distance", create=True)
+    ob["focus_distance"] = 10.00
+    prop["soft_min"] = prop["min"] = 0.0
+    prop["soft_max"] = prop["max"] = 1000.0
+
+    # Add custom property for the f-stop / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "f-stop", create=True)
+    ob["f-stop"] = 2.8
+    prop["soft_min"] = prop["min"] = 0.1
+    prop["soft_max"] = prop["max"] = 128.00
+
     # Add the camera object:
     bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -158,6 +172,32 @@ def build_dolly_rig(context):
     # Target the Custom bone property
     var.targets[0].id = bpy.data.objects[rig.name]
     var.targets[0].data_path = 'pose.bones["Camera"]["focal_length"]'
+    lens_driver.driver.expression = 'var'
+
+    # Add Driver to link the camera focus distance to the custom property on the armature
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Camera']
+    lens_driver = cam.data.driver_add("dof.focus_distance")
+    lens_driver.driver.type = 'SCRIPTED'
+    var = lens_driver.driver.variables.new()
+    var.name = 'var'
+    var.type = 'SINGLE_PROP'
+
+    # Target the Custom bone property
+    var.targets[0].id = bpy.data.objects[rig.name]
+    var.targets[0].data_path = 'pose.bones["Camera"]["focus_distance"]'
+    lens_driver.driver.expression = 'var'
+
+    # Add Driver to link the camera f-stop to the custom property on the armature
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Camera']
+    lens_driver = cam.data.driver_add("dof.aperture_fstop")
+    lens_driver.driver.type = 'SCRIPTED'
+    var = lens_driver.driver.variables.new()
+    var.name = 'var'
+    var.type = 'SINGLE_PROP'
+
+    # Target the Custom bone property
+    var.targets[0].id = bpy.data.objects[rig.name]
+    var.targets[0].data_path = 'pose.bones["Camera"]["f-stop"]'
     lens_driver.driver.expression = 'var'
 
     # lock the location/rotation/scale of the camera
@@ -337,6 +377,27 @@ def build_crane_rig(context):
     prop["default"] = 50.0
     prop["soft_max"] = prop["max"] = 5000.0
 
+    # Add custom property for the focus distance / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "focus_distance", create=True)
+    ob["focus_distance"] = 10.00
+    prop["soft_min"] = prop["min"] = 0.0
+    prop["soft_max"] = prop["max"] = 1000.0
+
+    # Add custom property for the focus distance / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "focus_distance", create=True)
+    ob["focus_distance"] = 10.00
+    prop["soft_min"] = prop["min"] = 0.0
+    prop["soft_max"] = prop["max"] = 1000.0
+
+    # Add custom property for the f-stop / add the driver after the camera is created
+    ob = bpy.context.object.pose.bones['Camera']
+    prop = rna_idprop_ui_prop_get(ob, "f-stop", create=True)
+    ob["f-stop"] = 2.8
+    prop["soft_min"] = prop["min"] = 0.1
+    prop["soft_max"] = prop["max"] = 128.00
+
     # Add the camera object:
     bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -374,6 +435,32 @@ def build_crane_rig(context):
     # Target the Custom bone property
     var.targets[0].id = bpy.data.objects[rig.name]
     var.targets[0].data_path = 'pose.bones["Camera"]["focal_length"]'
+    lens_driver.driver.expression = 'var'
+
+    # Add Driver to link the camera focus distance to the custom property on the armature
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Camera']
+    lens_driver = cam.data.driver_add("dof.focus_distance")
+    lens_driver.driver.type = 'SCRIPTED'
+    var = lens_driver.driver.variables.new()
+    var.name = 'var'
+    var.type = 'SINGLE_PROP'
+
+    # Target the Custom bone property
+    var.targets[0].id = bpy.data.objects[rig.name]
+    var.targets[0].data_path = 'pose.bones["Camera"]["focus_distance"]'
+    lens_driver.driver.expression = 'var'
+
+    # Add Driver to link the camera f-stop to the custom property on the armature
+    pose_bone = bpy.data.objects[rig.name].pose.bones['Camera']
+    lens_driver = cam.data.driver_add("dof.aperture_fstop")
+    lens_driver.driver.type = 'SCRIPTED'
+    var = lens_driver.driver.variables.new()
+    var.name = 'var'
+    var.type = 'SINGLE_PROP'
+
+    # Target the Custom bone property
+    var.targets[0].id = bpy.data.objects[rig.name]
+    var.targets[0].data_path = 'pose.bones["Camera"]["f-stop"]'
     lens_driver.driver.expression = 'var'
 
     #  the location/rotation/scale of the camera

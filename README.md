@@ -13,15 +13,11 @@ bugtracking: https://github.com/waylow/add_camera_rigs/issues
 
 NOTES:
 -I added the comp guides back
--the lens is now controlled by the rig and not the camera
+-the focal length/focal distance/f-stop is now controlled by the rig and not the camera
 
 ==========
 ==TO DO:==
 ==========
--add focal distance driver
--add f-stopdriver
- to the rig(s) just like the focal Length
- 
 -see if the devs can change it so you can use a bone to drive the focal_distance
 
 Bugs:
