@@ -11,14 +11,23 @@ bugtracking: https://github.com/waylow/add_camera_rigs/issues
 
 
 
-NOTES:
--I added the comp guides back
--the focal length/focal distance/f-stop is now controlled by the rig and not the camera
+[1.2]
+-Updated most of the code to work with the 2.80 api
+-spilt to code into modules, partially optimised it
+-removed the composition guides as it is not functioning the same in 2.80
+
+[1.3]
+-added the composition guides back
+-added drivers on the armature to control the focal length/focal distance and f-stop with the rig so you don't have to animate 2 objects.
+
+[1.4]
+-reoriented the Root control to match the world orientation.  (nicer to animate)
+-edited the WDGT_camera_root code to reflect this change too
 
 ==========
 ==TO DO:==
 ==========
--see if the devs can change it so you can use a bone to drive the focal_distance
+-see if the devs can open up access for the focal object to be a bone,  at the moment you have to create an empty and then parent this to the aim controller.
 
 Bugs:
 -if the current collection is hidden it throws an error when you try to add a camera rig

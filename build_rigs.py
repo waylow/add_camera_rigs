@@ -37,8 +37,7 @@ def build_dolly_rig(context):
 
     # Add new bones:
     root = bones.new("Root")
-    root.tail = (0.0, 0.0, -5.0)
-    root.roll = radians(90)
+    root.tail = (0.0, 3.0, 0.0)
 
     bpy.ops.object.mode_set(mode='EDIT')
     ctrlAimChild = bones.new("aim_MCH")
@@ -266,7 +265,7 @@ def build_crane_rig(context):
 
     # Add new bones:
     root = bones.new("Root")
-    root.tail = (0.0, 0.0, -5.0)
+    root.tail = (0.0, 3.0, 0.0)
 
     ctrlAimChild = bones.new("aim_MCH")
     ctrlAimChild.head = (0.0, 10.0, 1.0)
