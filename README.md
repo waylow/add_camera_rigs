@@ -23,6 +23,8 @@ bugtracking: https://github.com/waylow/add_camera_rigs/issues
 [1.4]
 -reoriented the Root control to match the world orientation.  (nicer to animate)
 -edited the WDGT_camera_root code to reflect this change too
+-added the GPL code block
+-formatted some code neater (a few clean ups)
 
 ==========
 ==TO DO:==

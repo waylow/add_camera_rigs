@@ -17,9 +17,9 @@ def set_scene_camera():
 
 
 class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
-    '''Makes the camera parented to this rig the active scene camera'''
     bl_idname = "add_camera_rigs.set_scene_camera"
     bl_label = "Make Camera Active"
+    bl_description = "Makes the camera parented to this rig the active scene camera"
 
     @classmethod
     def poll(cls, context):
@@ -27,6 +27,7 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     def execute(self, context):
         set_scene_camera()
+
         return {'FINISHED'}
 
 
@@ -52,9 +53,9 @@ def markerBind():
 
 
 class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator):
-    '''Add marker to current frame then bind rig camera to it (for camera switching)'''
     bl_idname = "add_camera_rigs.add_marker_bind"
     bl_label = "Add Marker and Bind Camera"
+    bl_description = "Add marker to current frame then bind rig camera to it (for camera switching)"
 
     @classmethod
     def poll(cls, context):
@@ -62,6 +63,7 @@ class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator):
 
     def execute(self, context):
         markerBind()
+
         return {'FINISHED'}
 
 
@@ -101,9 +103,9 @@ def add_DOF_object():
 
 
 class ADD_CAMERA_RIGS_OT_add_dof_object(Operator):
-    """Create Empty and add as DOF Object"""
     bl_idname = "add_camera_rigs.add_dof_object"
     bl_label = "Add DOF Object"
+    bl_description = "Create Empty and add as DOF Object"
 
     @classmethod
     def poll(cls, context):
@@ -111,6 +113,7 @@ class ADD_CAMERA_RIGS_OT_add_dof_object(Operator):
 
     def execute(self, context):
         add_DOF_object()
+
         return {'FINISHED'}
 
 

@@ -10,7 +10,7 @@ from .create_widgets import (create_root_widget,
 
 
 def build_dolly_rig(context):
-    """Operator to build the dolly rig """
+    """Operator to build the dolly rig"""
     # Set the bone layers
     boneLayer = (False, True, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False,
@@ -219,9 +219,9 @@ def build_dolly_rig(context):
 
 
 class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
-    """Build a Camera Dolly Rig"""
     bl_idname = "add_camera_rigs.build_dolly_rig"
     bl_label = "Build Dolly Camera Rig"
+    bl_description = "Build a Camera Dolly Rig"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -235,6 +235,7 @@ class ADD_CAMERA_RIGS_OT_build_dolly_rig(Operator):
 
         # call the function to build the rig
         build_dolly_rig(context)
+
         return {'FINISHED'}
 
 
@@ -482,9 +483,9 @@ def build_crane_rig(context):
 
 
 class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
-    """Build a Camera Crane Rig"""
     bl_idname = "add_camera_rigs.build_crane_rig"
     bl_label = "Build Crane Camera Rig"
+    bl_description = "Build a Camera Crane Rig"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -498,6 +499,7 @@ class ADD_CAMERA_RIGS_OT_build_crane_rig(Operator):
 
         # call the function to build the rig
         build_crane_rig(context)
+
         return {'FINISHED'}
 
 

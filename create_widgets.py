@@ -1,4 +1,4 @@
-import bpy
+is notimport bpy
 
 
 def create_widget(self, name):
@@ -28,9 +28,9 @@ def create_widget(self, name):
 
 
 def create_root_widget(self, name):
-    """Creates a compass-shaped widget."""
+    # Creates a compass-shaped widget
     obj = create_widget(self, name)
-    if obj != None:
+    if obj is not None:
         verts = [(0.210255, 0.209045, 0), (0.113789, 0.273501, -2.98023e-08),
                  (-3.07015e-08, 0.296135, 0), (-0.113789, 0.273501, 0),
                  (-0.210255, 0.209045, 0), (-0.274712, 0.112579, 7.45058e-09),
@@ -54,6 +54,7 @@ def create_root_widget(self, name):
                  (-0.0715289, -0.381512, 2.98023e-08), (0.0715291, -0.381512, -2.98023e-08),
                  (0.0715291, -0.508285, 0), (-0.0715289, -0.508285, 0),
                  ]
+
         edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (7, 8), (0, 8), (10, 11), (9, 12),
                  (11, 12), (10, 13), (9, 14), (13, 15), (14, 15), (16,
                                                                    22), (17, 18), (18, 19), (19, 20), (20, 21),
@@ -62,6 +63,7 @@ def create_root_widget(self, name):
                  (31, 32), (30, 33), (32, 33), (31, 34), (30, 35), (34,
                                                                     36), (35, 36), (37, 38), (37, 39), (38, 43),
                  (39, 42), (40, 41), (40, 43), (41, 42), ]
+
         faces = []
 
         mesh = obj.data
@@ -70,7 +72,7 @@ def create_root_widget(self, name):
 
 
 def create_camera_widget(self, name):
-    """Creates a camera ctrl widget."""
+    # Creates a camera ctrl widget
 
     obj = create_widget(self, name)
     if obj != None:
@@ -145,13 +147,15 @@ def create_camera_widget(self, name):
                  (47, 48), (48, 49), (44, 50), (51, 59), (51, 52), (53, 54), (54, 55), (55, 56),
                  (56, 57), (57, 58), (58, 59), (26, 60), (27, 60), (23, 60)]
 
+        faces = []
+
         mesh = obj.data
         mesh.from_pydata(verts, edges, [])
         mesh.update()
 
 
 def create_aim_widget(self, name):
-    """Creates a camera aim widget."""
+    # Creates a camera aim widget
 
     obj = create_widget(self, name)
     if obj != None:
@@ -229,6 +233,8 @@ def create_aim_widget(self, name):
                  (40, 41), (40, 43), (41, 42), (50, 53), (49, 52), (44, 45), (45, 46), (46, 47),
                  (47, 48), (48, 49), (44, 50), (51, 59), (51, 52), (53, 54), (54, 55), (55, 56),
                  (56, 57), (57, 58), (58, 59), (26, 60), (27, 60), (23, 60), (61, 62), (63, 64)]
+
+        faces = []
 
         mesh = obj.data
         mesh.from_pydata(verts, edges, [])
