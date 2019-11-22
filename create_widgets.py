@@ -1,4 +1,4 @@
-is notimport bpy
+import bpy
 
 
 def create_widget(self, name):
