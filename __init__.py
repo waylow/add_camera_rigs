@@ -16,14 +16,15 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-
 bl_info = {
     "name": "Add Camera Rigs",
-    "author": "Wayne Dixon, Brian Raschko, Kris Wittig",
-    "version": (1, 4),
+    "author": "Wayne Dixon, Brian Raschko, Kris Wittig, Damien Picard",
+    "version": (1, 4, 2),
     "blender": (2, 80, 0),
     "location": "View3D > Add > Camera > Dolly or Crane Rig",
     "description": "Adds a Camera Rig with UI",
+    "wiki_url": "https://docs.blender.org/manual/en/dev/addons/"
+                "camera/camera_rigs.html",
     "tracker_url": "https://github.com/waylow/add_camera_rigs/issues",
     "category": "Camera",
 }
