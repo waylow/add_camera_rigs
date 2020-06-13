@@ -24,8 +24,9 @@ from rna_prop_ui import rna_idprop_ui_prop_get
 from math import pi
 
 from .create_widgets import (create_root_widget,
-                             create_camera_widget, create_aim_widget,
-                             create_circle_widget, create_corner_widget)
+                             create_camera_widget, create_camera_offset_widget,
+                             create_aim_widget, create_circle_widget,
+                             create_corner_widget)
 
 
 def create_prop_driver(rig, cam, prop_from, prop_to):
@@ -77,6 +78,9 @@ def create_dolly_bones(rig):
     ctrl_aim.parent = root
     ctrl_aim_child.parent = ctrl_aim
 
+    # Jump into object mode
+    bpy.ops.object.mode_set(mode='OBJECT')
+    pose_bones = rig.pose.bones
     # Lock the relevant scale channels of the Camera_offset bone
     pose_bones["Camera_offset"].lock_scale = (True,) * 3
 
@@ -163,7 +167,7 @@ def setup_3d_rig(rig, cam):
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
     camera_widget = create_camera_widget("Camera")
-    camera_offset_widget = create_circle_widget("Camera_offset", radius=0.5)
+    camera_offset_widget = create_camera_offset_widget("Camera_offset")
     aim_widget = create_aim_widget("Aim")
 
     # Add the custom bone shapes
@@ -499,7 +503,10 @@ def build_camera_rig(context, mode):
     cam.location = (0.0, -1.0, 0.0)  # Move the camera to the correct position
     cam.parent = rig
     cam.parent_type = "BONE"
-    cam.parent_bone = "Camera_offset"
+    if mode == "2D":
+        cam.parent_bone = "Camera"
+    else:
+        cam.parent_bone = "Camera_offset"
 
     # Change display to BBone: it just looks nicer
     rig.data.display_type = 'BBONE'
