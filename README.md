@@ -9,8 +9,6 @@ Old Video Demo: https://vimeo.com/85884210
 Old wikipage: http://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Rigging/Add_Camera_Rigs
 bugtracking: https://github.com/waylow/add_camera_rigs/issues
 
-
-
 [1.2]
 -Updated most of the code to work with the 2.80 api
 -spilt to code into modules, partially optimised it
