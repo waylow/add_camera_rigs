@@ -1,20 +1,6 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
+# SPDX-FileCopyrightText: 2019-2022 Blender Foundation
 #
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software Foundation,
-#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ##### END GPL LICENSE BLOCK #####
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
 from bpy.types import Panel
@@ -48,20 +34,23 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
         layout.prop(cam_data, "type")
 
         # DoF
-        col = layout.column(align=True)
+        col = layout.column(align=False)
         col.prop(cam_data.dof, "use_dof")
         if cam_data.dof.use_dof:
-            if rig["rig_id"].lower() in ("crane_rig", "dolly_rig"):
-                if cam_data.dof.focus_object is None:
-                    col.operator("add_camera_rigs.add_dof_object",
-                                 text="Add DOF Empty", icon="OUTLINER_OB_EMPTY")
-            else:
-                col.prop(cam_data.dof, "focus_object")
-            row = col.row(align=True)
+            sub = col.column(align=True)
+            if cam_data.dof.focus_object is None:
+                sub.operator("add_camera_rigs.set_dof_bone")
+            sub.prop(cam_data.dof, "focus_object")
+            if (cam_data.dof.focus_object is not None
+                    and cam_data.dof.focus_object.type == 'ARMATURE'):
+                sub.prop_search(cam_data.dof, "focus_subtarget",
+                                cam_data.dof.focus_object.data, "bones")
+            sub = col.column(align=True)
+            row = sub.row(align=True)
             row.active = cam_data.dof.focus_object is None
             row.prop(pose_bones["Camera"],
                      '["focus_distance"]', text="Focus Distance")
-            col.prop(pose_bones["Camera"],
+            sub.prop(pose_bones["Camera"],
                      '["aperture_fstop"]', text="F-Stop")
 
         # Viewport display
@@ -90,9 +79,15 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             # Track to Constraint
             col = layout.column(align=True)
-            col.label(text="Tracking:")
-            col.prop(pose_bones["Camera"].constraints["Track To"],
-                     'influence', text="Aim Lock", slider=True)
+            track_to_constraint = None
+            for con in pose_bones["Camera"].constraints:
+                if con.type == 'TRACK_TO':
+                    track_to_constraint = con
+                    break
+            if track_to_constraint is not None:
+                col.label(text="Tracking:")
+                col.prop(track_to_constraint, 'influence',
+                         text="Aim Lock", slider=True)
 
             # Crane arm stuff
             if rig["rig_id"].lower() == "crane_rig":

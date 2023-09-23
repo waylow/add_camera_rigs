@@ -1,26 +1,11 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
+# SPDX-FileCopyrightText: 2019-2022 Blender Foundation
 #
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software Foundation,
-#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ##### END GPL LICENSE BLOCK #####
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
 from bpy.types import Operator
 from bpy_extras import object_utils
 from mathutils import Vector
-from rna_prop_ui import rna_idprop_ui_prop_get
 from math import pi
 
 from .create_widgets import (create_root_widget,
@@ -158,11 +143,8 @@ def setup_3d_rig(rig, cam):
     # Lens property
     pb = pose_bones['Camera']
     pb["lens"] = 50.0
-    prop = rna_idprop_ui_prop_get(pb, "lens", create=True)
-    prop["default"] = 50.0
-    prop["min"] = 1.0
-    prop["max"] = 1000000.0
-    prop["soft_max"] = 5000.0
+    ui_data = pb.id_properties_ui("lens")
+    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
 
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
@@ -327,12 +309,8 @@ def create_2d_bones(context, rig, cam):
 
     # Property to switch between rotation and switch mode
     pose_bones["Camera"]['rotation_shift'] = 0.0
-    prop = rna_idprop_ui_prop_get(pose_bones["Camera"], 'rotation_shift', create=True)
-    prop["min"] = 0.0
-    prop["max"] = 1.0
-    prop["soft_min"] = 0.0
-    prop["soft_max"] = 1.0
-    prop["description"] = 'rotation_shift'
+    ui_data = pose_bones["Camera"].id_properties_ui('rotation_shift')
+    ui_data.update(min=0.0, max=1.0, description="rotation_shift")
 
     # Rotation / shift switch driver
     driver = con.driver_add('influence').driver
@@ -526,18 +504,14 @@ def build_camera_rig(context, mode):
     # DOF Focus Distance property
     pb = pose_bones['Camera']
     pb["focus_distance"] = 10.0
-    prop = rna_idprop_ui_prop_get(pb, "focus_distance", create=True)
-    prop["default"] = 10.0
-    prop["min"] = 0.0
+    ui_data = pb.id_properties_ui('focus_distance')
+    ui_data.update(min=0.0, default=10.0)
 
     # DOF F-Stop property
     pb = pose_bones['Camera']
     pb["aperture_fstop"] = 2.8
-    prop = rna_idprop_ui_prop_get(pb, "aperture_fstop", create=True)
-    prop["default"] = 2.8
-    prop["min"] = 0.0
-    prop["soft_min"] = 0.1
-    prop["soft_max"] = 128.0
+    ui_data = pb.id_properties_ui('aperture_fstop')
+    ui_data.update(min=0.0, soft_min=0.1, soft_max=128.0, default=2.8)
 
     # Add drivers to link the camera properties to the custom props
     # on the armature
