@@ -5,7 +5,7 @@
 bl_info = {
     "name": "Add Camera Rigs",
     "author": "Wayne Dixon, Brian Raschko, Kris Wittig, Damien Picard, Flavio Perez",
-    "version": (1, 5, 1),
+    "version": (1, 5, 2),
     "blender": (4, 0, 0),
     "location": "View3D > Add > Camera",
     "description": "Adds a Camera Rig with UI",
