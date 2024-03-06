@@ -104,6 +104,12 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
             col.label(text="2D Rig:")
             col.prop(pose_bones["Camera"], '["rotation_shift"]',
                      text="Rotation/Shift")
+            col.prop(pose_bones["Camera"], '["lens"]',
+                     text="Lens")
+            col.prop(pose_bones["Camera"], '["focus_distance"]',
+                     text="Focal Distance")
+            col.prop(pose_bones["Camera"], '["aperture_fstop"]',
+                     text="F-Stop")
             if cam.data.sensor_width != 36:
                 col.label(text="Please set Camera Sensor Width to 36", icon="ERROR")
 

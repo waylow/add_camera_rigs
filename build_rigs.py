@@ -127,11 +127,11 @@ def create_crane_bones(rig):
     ctrl.parent = arm
     ctrl_offset.parent = ctrl
     ctrl.use_inherit_rotation = False
-    ctrl.use_inherit_scale = False
+    ctrl.inherit_scale = "NONE"
     ctrl.show_wire = True
 
     arm.parent = height
-    arm.use_inherit_scale = False
+    arm.inherit_scale = "NONE"
 
     height.parent = root
     ctrl_aim.parent = root
@@ -427,8 +427,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id_type = 'CAMERA'
-    var.targets[0].id = cam.data
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Camera"
     var.targets[0].data_path = 'lens'
 
     # Shift driver Y
@@ -472,8 +472,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id_type = 'CAMERA'
-    var.targets[0].id = cam.data
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Camera"
     var.targets[0].data_path = 'lens'
 
 
@@ -486,7 +486,7 @@ def build_camera_rig(context, mode):
     context.scene.camera = cam
 
     # Add the rig object
-    rig_name = mode.capitalize() + "_RIG"
+    rig_name = mode.capitalize() + "_Rig"
     rig_data = bpy.data.armatures.new(rig_name)
     rig = object_utils.object_data_add(context, rig_data, name=rig_name)
     rig["rig_id"] = "%s" % rig_name
@@ -540,10 +540,17 @@ def build_camera_rig(context, mode):
     ui_data = pb.id_properties_ui('aperture_fstop')
     ui_data.update(min=0.0, soft_min=0.1, soft_max=128.0, default=2.8)
 
+    # Lens property
+    pb = pose_bones['Camera']
+    pb["lens"] = 50.0
+    ui_data = pb.id_properties_ui("lens")
+    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
+
     # Add drivers to link the camera properties to the custom props
     # on the armature
     create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
     create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
+    create_prop_driver(rig, cam, "lens", "lens")
 
     # Make the rig the active object
     view_layer = context.view_layer
