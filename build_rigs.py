@@ -283,6 +283,12 @@ def create_2d_bones(context, rig, cam):
     for bone in pose_bones:
         bone.rotation_mode = 'XYZ'
 
+    # Lens property
+    pb = pose_bones['Camera']
+    pb["lens"] = 50.0
+    ui_data = pb.id_properties_ui("lens")
+    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
+
     # Bone drivers
     center_drivers = pose_bones["MCH-Center"].driver_add("location")
 
@@ -380,7 +386,7 @@ def create_2d_bones(context, rig, cam):
     var.targets[0].data_path = 'pose.bones["Camera"]["rotation_shift"]'
 
     # Focal length driver
-    driver = cam.data.driver_add('lens').driver
+    driver = pose_bones["Camera"].driver_add('["lens"]').driver
     driver.expression = 'abs({distance_z} - (left_z + right_z)/2 + cam_z) * 36 / frame_width'.format(
         distance_z=corner_distance_z)
 
@@ -457,9 +463,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id_type = 'CAMERA'
-    var.targets[0].id = cam.data
-    var.targets[0].data_path = 'lens'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["lens"]'
 
     # Shift driver Y
     driver = cam.data.driver_add('shift_y').driver
@@ -502,9 +507,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id_type = 'CAMERA'
-    var.targets[0].id = cam.data
-    var.targets[0].data_path = 'lens'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["lens"]'
 
 
 def build_camera_rig(context, mode):
@@ -574,6 +578,7 @@ def build_camera_rig(context, mode):
     # on the armature
     create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
     create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
+    create_prop_driver(rig, cam, "lens", "lens")
 
     # Make the rig the active object
     view_layer = context.view_layer
