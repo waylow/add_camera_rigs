@@ -172,6 +172,7 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
     bl_idname = "add_camera_rigs.swap_lens"
     bl_label = "Swap Lens"
     bl_description = "Set the focal length to a specific value and shift the camera to match the same framing"
+    bl_options = {'REGISTER', 'UNDO'}
 
     camera_lens: bpy.props.FloatProperty(
         name="Focal Length (mm)",
@@ -187,15 +188,16 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
         row.label(text="Focal Length:")
         row.prop(self, "camera_lens", text="")
         row = layout.row()
-        
+
     def invoke(self, context, event):
-        rig, cam = get_rig_and_cam(context.active_object)
-        
-        return context.window_manager.invoke_props_dialog(self)
+        rig, _cam = get_rig_and_cam(context.active_object)
+        self.camera_lens = rig.pose.bones["Camera"]["lens"]
+
+        return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
-        
+
         # get the vector from aim to camera bone
         vector = (rig.pose.bones["Aim"].matrix - rig.pose.bones["Camera"].matrix).to_translation()
         root_scale =  rig.pose.bones['Root'].matrix.to_scale()
