@@ -37,10 +37,15 @@ def calculate_aim_distance(obj):
 class CameraRigMixin():
     @classmethod
     def poll(cls, context):
-        if context.active_object is not None:
-            return get_rig_and_cam(context.active_object) != (None, None)
-
-        return False
+        if context.active_object is None:
+            if hasattr(cls, "poll_message_set"):
+                cls.poll_message_set("No object is selected.")
+            return False
+        if None in get_rig_and_cam(context.active_object):
+            if hasattr(cls, "poll_message_set"):
+                cls.poll_message_set("Active object is not in a camera rig.")
+            return False
+        return True
 
 
 class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
@@ -50,12 +55,17 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.active_object is not None:
-            rig, cam = get_rig_and_cam(context.active_object)
-            if cam is not None:
-                return cam is not context.scene.camera
-
-        return False
+        if context.active_object is None:
+            cls.poll_message_set("No object is selected.")
+            return False
+        rig, cam = get_rig_and_cam(context.active_object)
+        if cam is None:
+            cls.poll_message_set("Active object is not in a camera rig.")
+            return False
+        if cam is context.scene.camera:
+            cls.poll_message_set("Selected camera is already the scene camera.")
+            return False
+        return True
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
