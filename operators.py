@@ -148,7 +148,7 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator, CameraRigMixin):
         rig.pose.bones["Camera"]["lens"] = lens_value
 
         # reset the offset back to zero
-        rig.pose.bones["Camera"]["lens_offset"] = 0
+        rig.pose.bones["Camera"]["lens_offset"] = 0.0
 
         #set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'DEFAULT'
