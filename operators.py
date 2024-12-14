@@ -176,8 +176,9 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
     camera_lens: bpy.props.FloatProperty(
         name="Focal Length (mm)",
         default=50,
-        min = 1,
-        max = 1000,
+        min=1,
+        max=1000,
+        subtype='DISTANCE_CAMERA',
         description="The value of the new focal length",
     )
 

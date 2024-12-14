@@ -164,7 +164,7 @@ def setup_3d_rig(rig, cam):
     pb = pose_bones['Camera']
     pb["lens"] = 50.0
     ui_data = pb.id_properties_ui("lens")
-    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
+    ui_data.update(min=1.0, max=1000000.0, soft_max=5000.0, default=50.0, subtype="DISTANCE_CAMERA")
 
     # lens offset property
     pb = pose_bones['Camera']

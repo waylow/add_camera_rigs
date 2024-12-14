@@ -25,8 +25,7 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             drv = cam.data.animation_data.drivers[0]
             if drv.driver.expression == "lens":
-                layout.prop(pose_bones["Camera"], '["lens"]',
-                            text="Focal Length (mm)")
+                layout.prop(pose_bones["Camera"], '["lens"]', text="Focal Length")
                 layout.operator("add_camera_rigs.set_dolly_zoom")
             else:
                 layout.prop(pose_bones["Camera"], '["lens_offset"]',
