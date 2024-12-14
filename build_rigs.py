@@ -227,9 +227,8 @@ def setup_3d_rig(rig, cam):
     var.targets[0].bone_target = 'Root'
 
 
-def create_2d_bones(context, rig, cam):
+def create_2d_bones(rig, cam):
     """Create bones for the 2D camera rig"""
-    scene = context.scene
     bones = rig.data.edit_bones
 
     # Add new bones
@@ -324,9 +323,8 @@ def create_2d_bones(context, rig, cam):
 
         var = driver.variables.new()
         var.name = 'res_' + direction
-        var.type = 'SINGLE_PROP'
-        var.targets[0].id_type = 'SCENE'
-        var.targets[0].id = scene
+        var.type = 'CONTEXT_PROP'
+        var.targets[0].context_property = 'ACTIVE_SCENE'
         var.targets[0].data_path = 'render.resolution_' + direction
 
     # Center Z driver
@@ -500,8 +498,8 @@ def create_2d_bones(context, rig, cam):
         var = driver.variables.new()
         var.name = 'res_' + direction
         var.type = 'SINGLE_PROP'
-        var.targets[0].id_type = 'SCENE'
-        var.targets[0].id = scene
+        var.type = 'CONTEXT_PROP'
+        var.targets[0].context_property = 'ACTIVE_SCENE'
         var.targets[0].data_path = 'render.resolution_' + direction
 
     var = driver.variables.new()
@@ -536,7 +534,7 @@ def build_camera_rig(context, mode):
         create_crane_bones(rig)
         setup_3d_rig(rig, cam)
     elif mode == "2D":
-        create_2d_bones(context, rig, cam)
+        create_2d_bones(rig, cam)
 
     # Parent the camera to the rig
     cam.location = (0.0, -1.0, 0.0)  # Move the camera to the correct position
