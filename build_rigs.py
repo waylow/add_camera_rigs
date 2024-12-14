@@ -27,7 +27,7 @@ def create_prop_driver(rig, cam, prop_from, prop_to):
     var.targets[0].data_path = 'pose.bones["Camera"]["%s"]' % prop_from
     driver.driver.expression = prop_from
 
-    return(driver)
+    return driver
 
 
 def create_dolly_bones(rig):

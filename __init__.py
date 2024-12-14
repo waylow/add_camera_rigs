@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import bpy
-import os
-
 from . import build_rigs
 from . import operators
 from . import ui_panels
