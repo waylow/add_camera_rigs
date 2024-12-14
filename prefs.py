@@ -7,7 +7,7 @@ from bpy.props import StringProperty
 
 
 class AddCameraRigsPreferences(AddonPreferences):
-    bl_idname = 'add_camera_rigs'
+    bl_idname = __package__
 
     # Widget prefix
     widget_prefix: StringProperty(

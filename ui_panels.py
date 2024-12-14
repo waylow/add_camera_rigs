@@ -23,13 +23,32 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
 
         # Camera lens
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
-            layout.prop(pose_bones["Camera"], '["lens"]',
-                        text="Focal Length (mm)")
+            drv = cam.data.animation_data.drivers[0]
+            if drv.driver.expression == "lens":
+                layout.prop(pose_bones["Camera"], '["lens"]',
+                            text="Focal Length (mm)")
+                layout.operator("add_camera_rigs.set_dolly_zoom")
+            else:
+                layout.prop(pose_bones["Camera"], '["lens_offset"]',
+                            text="Lens offset")
+                col = layout.column(align=False)
+                col.prop(cam_data, "lens")
+                col.enabled = False
+                layout.operator("add_camera_rigs.remove_dolly_zoom")
+            
+            layout.operator("add_camera_rigs.shift_to_pivot")
+            layout.operator("add_camera_rigs.swap_lens")
+                
 
         col = layout.column(align=True)
         col.label(text="Clipping:")
         col.prop(cam_data, "clip_start", text="Start")
         col.prop(cam_data, "clip_end", text="End")
+
+        col = layout.column(align=True)
+        col.label(text="Shift:")
+        col.prop(cam_data, "shift_x", text="X")
+        col.prop(cam_data, "shift_y", text="Y")
 
         layout.prop(cam_data, "type")
 
@@ -93,9 +112,9 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
             if rig["rig_id"].lower() == "crane_rig":
                 col = layout.column(align=True)
                 col.label(text="Crane Arm:")
-                col.prop(pose_bones["Crane_height"],
+                col.prop(pose_bones["Crane_Height"],
                          'scale', index=1, text="Arm Height")
-                col.prop(pose_bones["Crane_arm"],
+                col.prop(pose_bones["Crane_Arm"],
                          'scale', index=1, text="Arm Length")
 
         # 2D rig stuff
@@ -104,12 +123,6 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigMixin):
             col.label(text="2D Rig:")
             col.prop(pose_bones["Camera"], '["rotation_shift"]',
                      text="Rotation/Shift")
-            col.prop(pose_bones["Camera"], '["lens"]',
-                     text="Lens")
-            col.prop(pose_bones["Camera"], '["focus_distance"]',
-                     text="Focal Distance")
-            col.prop(pose_bones["Camera"], '["aperture_fstop"]',
-                     text="F-Stop")
             if cam.data.sensor_width != 36:
                 col.label(text="Please set Camera Sensor Width to 36", icon="ERROR")
 

@@ -19,13 +19,15 @@ def create_prop_driver(rig, cam, prop_from, prop_to):
     driver = cam.data.driver_add(prop_to)
     driver.driver.type = 'SCRIPTED'
     var = driver.driver.variables.new()
-    var.name = 'var'
+    var.name = '%s' % prop_from
     var.type = 'SINGLE_PROP'
 
     # Target the custom bone property
     var.targets[0].id = rig
     var.targets[0].data_path = 'pose.bones["Camera"]["%s"]' % prop_from
-    driver.driver.expression = 'var'
+    driver.driver.expression = '%s' % prop_from
+
+    return(driver)
 
 
 def create_dolly_bones(rig):
@@ -164,6 +166,12 @@ def setup_3d_rig(rig, cam):
     ui_data = pb.id_properties_ui("lens")
     ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
 
+    # lens offset property
+    pb = pose_bones['Camera']
+    pb["lens_offset"] = 0.0
+    ui_data = pb.id_properties_ui("lens_offset")
+    ui_data.update(min=-1000000.0, max=1000000.0, soft_max = 5000.0, soft_min = -5000.0,default=0.0)
+
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
     camera_widget = create_camera_widget("Camera")
@@ -194,7 +202,29 @@ def setup_3d_rig(rig, cam):
     cam.data.display_size = 1.0
     cam.rotation_euler[0] = pi / 2.0  # Rotate the camera 90 degrees in x
 
-    create_prop_driver(rig, cam, "lens", "lens")
+    drv = create_prop_driver(rig, cam, "lens", "lens")
+
+    # create driver variables (for Dolly Zoom switching)
+    var = drv.driver.variables.new()
+    var.name = 'lens_offset'
+    var.type = 'SINGLE_PROP'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["lens_offset"]'
+
+    var = drv.driver.variables.new()
+    var.name = 'distance'
+    var.type = 'LOC_DIFF'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = 'Camera'
+    var.targets[1].id = rig
+    var.targets[1].bone_target = 'Aim'
+
+    var = drv.driver.variables.new()
+    var.name = 'root_scale'
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].transform_type = 'SCALE_AVG'
+    var.targets[0].bone_target = 'Root'
 
 
 def create_2d_bones(context, rig, cam):
@@ -427,8 +457,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id = rig
-    var.targets[0].bone_target = "Camera"
+    var.targets[0].id_type = 'CAMERA'
+    var.targets[0].id = cam.data
     var.targets[0].data_path = 'lens'
 
     # Shift driver Y
@@ -472,8 +502,8 @@ def create_2d_bones(context, rig, cam):
     var = driver.variables.new()
     var.name = 'lens'
     var.type = 'SINGLE_PROP'
-    var.targets[0].id = rig
-    var.targets[0].bone_target = "Camera"
+    var.targets[0].id_type = 'CAMERA'
+    var.targets[0].id = cam.data
     var.targets[0].data_path = 'lens'
 
 
@@ -540,17 +570,10 @@ def build_camera_rig(context, mode):
     ui_data = pb.id_properties_ui('aperture_fstop')
     ui_data.update(min=0.0, soft_min=0.1, soft_max=128.0, default=2.8)
 
-    # Lens property
-    pb = pose_bones['Camera']
-    pb["lens"] = 50.0
-    ui_data = pb.id_properties_ui("lens")
-    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
-
     # Add drivers to link the camera properties to the custom props
     # on the armature
     create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
     create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
-    create_prop_driver(rig, cam, "lens", "lens")
 
     # Make the rig the active object
     view_layer = context.view_layer

@@ -9,7 +9,7 @@ from math import cos, sin, pi
 
 def create_widget(name):
     """Create an empty widget object and return the object"""
-    prefs = bpy.context.preferences.addons["add_camera_rigs"].preferences
+    prefs = bpy.context.preferences.addons[__package__].preferences
     widget_prefix = prefs.widget_prefix
     obj_name = widget_prefix + name
     scene = bpy.context.scene
