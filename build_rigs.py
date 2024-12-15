@@ -19,15 +19,15 @@ def create_prop_driver(rig, cam, prop_from, prop_to):
     driver = cam.data.driver_add(prop_to)
     driver.driver.type = 'SCRIPTED'
     var = driver.driver.variables.new()
-    var.name = '%s' % prop_from
+    var.name = prop_from
     var.type = 'SINGLE_PROP'
 
     # Target the custom bone property
     var.targets[0].id = rig
     var.targets[0].data_path = 'pose.bones["Camera"]["%s"]' % prop_from
-    driver.driver.expression = '%s' % prop_from
+    driver.driver.expression = prop_from
 
-    return(driver)
+    return driver
 
 
 def create_dolly_bones(rig):
@@ -164,7 +164,7 @@ def setup_3d_rig(rig, cam):
     pb = pose_bones['Camera']
     pb["lens"] = 50.0
     ui_data = pb.id_properties_ui("lens")
-    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
+    ui_data.update(min=1.0, max=1000000.0, soft_max=5000.0, default=50.0, subtype="DISTANCE_CAMERA")
 
     # lens offset property
     pb = pose_bones['Camera']
@@ -521,7 +521,7 @@ def build_camera_rig(context, mode):
     rig_name = mode.capitalize() + "_Rig"
     rig_data = bpy.data.armatures.new(rig_name)
     rig = object_utils.object_data_add(context, rig_data, name=rig_name)
-    rig["rig_id"] = "%s" % rig_name
+    rig["rig_id"] = rig_name
     rig.location = context.scene.cursor.location
 
     bpy.ops.object.mode_set(mode='EDIT')

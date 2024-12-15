@@ -37,10 +37,15 @@ def calculate_aim_distance(obj):
 class CameraRigMixin():
     @classmethod
     def poll(cls, context):
-        if context.active_object is not None:
-            return get_rig_and_cam(context.active_object) != (None, None)
-
-        return False
+        if context.active_object is None:
+            if hasattr(cls, "poll_message_set"):
+                cls.poll_message_set("No object is selected.")
+            return False
+        if None in get_rig_and_cam(context.active_object):
+            if hasattr(cls, "poll_message_set"):
+                cls.poll_message_set("Active object is not in a camera rig.")
+            return False
+        return True
 
 
 class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
@@ -50,12 +55,17 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.active_object is not None:
-            rig, cam = get_rig_and_cam(context.active_object)
-            if cam is not None:
-                return cam is not context.scene.camera
-
-        return False
+        if context.active_object is None:
+            cls.poll_message_set("No object is selected.")
+            return False
+        rig, cam = get_rig_and_cam(context.active_object)
+        if cam is None:
+            cls.poll_message_set("Active object is not in a camera rig.")
+            return False
+        if cam is context.scene.camera:
+            cls.poll_message_set("Selected camera is already the scene camera.")
+            return False
+        return True
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
@@ -138,7 +148,7 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator, CameraRigMixin):
         rig.pose.bones["Camera"]["lens"] = lens_value
 
         # reset the offset back to zero
-        rig.pose.bones["Camera"]["lens_offset"] = 0
+        rig.pose.bones["Camera"]["lens_offset"] = 0.0
 
         #set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'DEFAULT'
@@ -177,8 +187,9 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
     camera_lens: bpy.props.FloatProperty(
         name="Focal Length (mm)",
         default=50,
-        min = 1,
-        max = 1000,
+        min=1,
+        max=1000,
+        subtype='DISTANCE_CAMERA',
         description="The value of the new focal length",
     )
 

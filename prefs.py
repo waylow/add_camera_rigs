@@ -26,8 +26,7 @@ class AddCameraRigsPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row()
-        col = row.column()
+        col = layout.column()
         col.prop(self, "widget_prefix", text="Widget Prefix")
         col.prop(self, "camera_widget_collection_name", text="Collection name")
 
