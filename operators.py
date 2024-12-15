@@ -172,6 +172,7 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
     bl_idname = "add_camera_rigs.swap_lens"
     bl_label = "Swap Lens"
     bl_description = "Set the focal length to a specific value and shift the camera to match the same framing"
+    bl_options = {'REGISTER', 'UNDO'}
 
     camera_lens: bpy.props.FloatProperty(
         name="Focal Length (mm)",
@@ -187,19 +188,19 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
         row.label(text="Focal Length:")
         row.prop(self, "camera_lens", text="")
         row = layout.row()
-        
+
     def invoke(self, context, event):
-        rig, cam = get_rig_and_cam(context.active_object)
-        
-        return context.window_manager.invoke_props_dialog(self)
+        rig, _cam = get_rig_and_cam(context.active_object)
+        self.camera_lens = rig.pose.bones["Camera"]["lens"]
+
+        return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
-        
+
         # get the vector from aim to camera bone
-        vector = (rig.pose.bones["Aim"].matrix - rig.pose.bones["Camera"].matrix).to_translation()
-        root_scale =  rig.pose.bones['Root'].matrix.to_scale()
-        root_scale = (root_scale[0] + root_scale[1] + root_scale[2] )/ 3  # Average scale
+        vector = (rig.pose.bones["Aim"].matrix.to_translation()
+                  - rig.pose.bones["Camera"].matrix.to_translation())
 
         old_lens = rig.pose.bones["Camera"]["lens"]
         new_lens = self.camera_lens
@@ -207,16 +208,10 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
         # set the new camera lens
         rig.pose.bones["Camera"]["lens"] = new_lens
 
-        # calculate the new distance
-        new_distance = ((new_lens * 1.0 * vector.length ) / old_lens)  
-
-        # find the delta distance (divide by root scale to take care of any object and/or root scaling)
-        delta_distance = (vector.length - new_distance) / root_scale 
-        # turn that into a vector the translation matrix
-        movement_vector = vector.normalized() * delta_distance
-        camera_offset_matrix = mathutils.Matrix.Translation(movement_vector)
-        # move the camera to the correct position
-        rig.pose.bones["Camera"].matrix =  camera_offset_matrix @ rig.pose.bones["Camera"].matrix
+        # set the new camera position, by offsetting it
+        # towards the aim bone proportionally to the lens change
+        loc = rig.pose.bones["Camera"].matrix.translation
+        loc += vector * (1.0 - new_lens / old_lens)
 
         return {'FINISHED'}
 
