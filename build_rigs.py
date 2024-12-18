@@ -235,63 +235,73 @@ def create_2d_bones(rig, cam):
     """Create bones for the 2D camera rig"""
     bones = rig.data.edit_bones
 
+    # Add bone collections
+    collection_controls = rig.data.collections.new(name="Controls")
+    collection_offsets = rig.data.collections.new(name="Offsets")
+    collection_extras = rig.data.collections.new(name="Extras")
+    collection_mch = rig.data.collections.new(name="MCH")
+    collection_mch.is_visible = False
+
     # Add new bones
     bones = rig.data.edit_bones
     root = bones.new("Root")
     root.tail = (0.0, 0.0, 1.0)
     root.show_wire = True
-    rig.data.collections.new(name="Controls")
-    rig.data.collections['Controls'].assign(root)
+    root.color.palette = 'THEME02'
+    collection_controls.assign(root)
 
     ctrl_offset = bones.new("Root_Offset")
     ctrl_offset.head = (0.0, 0.0, 0.0)
     ctrl_offset.tail = (0.0, 0.0, 1.0)
     ctrl_offset.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_offset)
+    ctrl_offset.color.palette = 'THEME04'
+    collection_offsets.assign(ctrl_offset)
 
     ctrl_tweak = bones.new("Root_Tweak")
     ctrl_tweak.head = (0.0, 0.0, 0.0)
     ctrl_tweak.tail = (0.0, 0.0, 1.0)
     ctrl_tweak.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_tweak)
+    ctrl_tweak.color.palette = 'THEME09'
+    collection_extras.assign(ctrl_tweak)
 
     ctrl = bones.new('Camera')
     ctrl.head = (0.0, 0.0, 0.0)
     ctrl.tail = (0.0, 0.0, 1.0)
     ctrl.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl)
+    ctrl.color.palette = 'THEME02'
+    collection_controls.assign(ctrl)
 
     ctrl_aim = bones.new("Aim")
     ctrl_aim.head = (0.0, 10.0, 0.0)
     ctrl_aim.tail = (0.0, 10.0, 1.0)
     ctrl_aim.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_aim)
+    ctrl_aim.color.palette = 'THEME04'
+    collection_offsets.assign(ctrl_aim)
 
     left_corner = bones.new("Left_Corner")
     left_corner.head = (-3.0, 10.0, -1.7)
     left_corner.tail = left_corner.head + Vector((0.0, 0.0, 1.0))
     left_corner.show_wire = True
-    rig.data.collections['Controls'].assign(left_corner)
+    left_corner.color.palette = 'THEME02'
+    collection_controls.assign(left_corner)
 
     right_corner = bones.new("Right_Corner")
     right_corner.head = (3.0, 10.0, -1.7)
     right_corner.tail = right_corner.head + Vector((0.0, 0.0, 1.0))
     right_corner.show_wire = True
-    rig.data.collections['Controls'].assign(right_corner)
+    right_corner.color.palette = 'THEME02'
+    collection_controls.assign(right_corner)
 
     corner_distance_x = (left_corner.head - right_corner.head).length
     corner_distance_y = ctrl.head.z - left_corner.head.z
     corner_distance_z = left_corner.head.y
-    rig.data.collections['Controls'].assign(root)
+    collection_controls.assign(root)
 
     center = bones.new("MCH-Center")
     center.head = ((right_corner.head + left_corner.head) / 2.0)
     center.tail = center.head + Vector((0.0, 0.0, 1.0))
     center.show_wire = True
-    rig.data.collections.new(name="MCH")
-    rig.data.collections['MCH'].assign(center)
-    rig.data.collections['MCH'].is_visible = False
-    center.show_wire = True
+    collection_mch.assign(center)
 
     # Setup hierarchy
     ctrl_offset.parent = root
