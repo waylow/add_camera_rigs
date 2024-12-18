@@ -95,6 +95,32 @@ def create_star_widget(name, radius=1.0):
     return obj
 
 
+def create_cross_widget(name, size=5.0):
+    """Create a cross-shaped widget"""
+    obj = create_widget(name)
+    if not obj.data.vertices:
+        verts = (
+            size * Vector((0.01,   0.01, 0.0)),
+            size * Vector((0.1,    0.01, 0.0)),
+            size * Vector((0.1,   -0.01, 0.0)),
+            size * Vector((0.01,  -0.01, 0.0)),
+            size * Vector((0.01,  -0.1,  0.0)),
+            size * Vector((-0.01, -0.1,  0.0)),
+            size * Vector((-0.01, -0.01, 0.0)),
+            size * Vector((-0.1,  -0.01, 0.0)),
+            size * Vector((-0.1,   0.01, 0.0)),
+            size * Vector((-0.01,  0.01, 0.0)),
+            size * Vector((-0.01,  0.1,  0.0)),
+            size * Vector((0.01,   0.1,  0.0)),
+        )
+        edges = [(n, (n+1) % len(verts)) for n in range(len(verts))]
+
+        mesh = obj.data
+        mesh.from_pydata(verts, edges, ())
+        mesh.update()
+    return obj
+
+
 def create_root_widget(name):
     """Create a compass-shaped widget"""
     obj = create_widget(name)
