@@ -11,9 +11,9 @@ from math import pi
 from .create_widgets import (
     create_root_widget,
     create_camera_widget,
-    create_camera_offset_widget,
     create_aim_widget,
     create_corner_widget,
+    create_circle_widget,
     create_star_widget,
 )
 
@@ -179,7 +179,7 @@ def setup_3d_rig(rig, cam):
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
     camera_widget = create_camera_widget("Camera")
-    camera_offset_widget = create_camera_offset_widget("Camera_Offset")
+    camera_offset_widget = create_circle_widget("Camera_Offset", radius=0.23)
     aim_widget = create_aim_widget("Aim")
 
     # Add the custom bone shapes
@@ -392,7 +392,7 @@ def create_2d_bones(rig, cam):
 
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
-    camera_offset_widget = create_camera_offset_widget("Root_Offset")
+    camera_offset_widget = create_circle_widget("Root_Offset", radius=0.68)
     tweak_widget = create_star_widget("Root_Tweak", radius=0.48)
     camera_widget = create_camera_widget("Camera")
     aim_widget = create_aim_widget("Aim")
