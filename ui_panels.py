@@ -100,7 +100,10 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui_dof(Panel, CameraRigUIMixin):
         col = layout.column(align=False)
         col.active = cam_data.dof.use_dof
         if cam_data.dof.focus_object is None:
-            col.operator("add_camera_rigs.set_dof_bone")
+            if rig["rig_id"].lower() == "2d_rig":
+                col.operator("add_camera_rigs.set_dof_bone", text="Setup DOF Bone")
+            else:
+                col.operator("add_camera_rigs.set_dof_bone")
         sub = col.column(align=True)
         sub.prop(cam_data.dof, "focus_object", text="Focus on Object")
         if (cam_data.dof.focus_object is not None
@@ -167,9 +170,9 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui_visibility(Panel, CameraRigUIMixin):
         col.operator("add_camera_rigs.set_scene_camera",
                      text="Make Camera Active", icon='CAMERA_DATA')
 
-        if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
-            layout.use_property_split = True
+        layout.use_property_split = True
 
+        if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             # Track to Constraint
             track_to_constraint = None
             for con in pose_bones["Camera"].constraints:
@@ -188,6 +191,18 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui_visibility(Panel, CameraRigUIMixin):
                          'scale', index=1, text="Crane Arm Height")
                 col.prop(pose_bones["Crane_Arm"],
                          'scale', index=1, text="Length")
+
+        elif rig["rig_id"].lower() == "2d_rig" and "MCH-DOF_Parent" in pose_bones:
+            # DOF constraint
+            copy_loc_constraint = None
+            for con in pose_bones["MCH-DOF_Parent"].constraints:
+                if con.type == 'COPY_LOCATION':
+                    copy_loc_constraint = con
+                    break
+            if copy_loc_constraint is not None:
+                col = layout.column(align=True)
+                col.prop(copy_loc_constraint, 'influence',
+                         text="Center DOF", slider=True)
 
 
 def register():

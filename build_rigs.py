@@ -15,6 +15,7 @@ from .create_widgets import (
     create_aim_widget,
     create_corner_widget,
     create_star_widget,
+    create_cross_widget,
 )
 
 
@@ -265,12 +266,12 @@ def create_2d_bones(rig, cam):
     ctrl_noise.color.palette = 'THEME09'
     collection_extras.assign(ctrl_noise)
 
-    ctrl = bones.new('Camera')
-    ctrl.head = (0.0, 0.0, 1.7)
-    ctrl.tail = (0.0, 0.0, 2.7)
-    ctrl.show_wire = True
-    ctrl.color.palette = 'THEME02'
-    collection_controls.assign(ctrl)
+    ctrl_camera = bones.new("Camera")
+    ctrl_camera.head = (0.0, 0.0, 1.7)
+    ctrl_camera.tail = (0.0, 0.0, 2.7)
+    ctrl_camera.show_wire = True
+    ctrl_camera.color.palette = 'THEME02'
+    collection_controls.assign(ctrl_camera)
 
     ctrl_aim = bones.new("Aim")
     ctrl_aim.head = (0.0, 10.0, 1.7)
@@ -294,7 +295,7 @@ def create_2d_bones(rig, cam):
     collection_controls.assign(right_corner)
 
     corner_distance_x = (left_corner.head - right_corner.head).length
-    corner_distance_y = ctrl.head.z - left_corner.head.z
+    corner_distance_y = ctrl_camera.head.z - left_corner.head.z
     corner_distance_z = left_corner.head.y
     collection_controls.assign(root)
 
@@ -304,14 +305,29 @@ def create_2d_bones(rig, cam):
     center.show_wire = True
     collection_mch.assign(center)
 
+    dof = bones.new("DOF")
+    dof.head = ctrl_aim.head
+    dof.tail = ctrl_aim.tail
+    dof.show_wire = True
+    dof.color.palette = 'THEME09'
+    collection_extras.assign(dof)
+
+    dof_parent = bones.new("MCH-DOF_Parent")
+    dof_parent.head = ctrl_aim.head
+    dof_parent.tail = ctrl_aim.tail
+    dof_parent.show_wire = True
+    collection_mch.assign(dof_parent)
+
     # Setup hierarchy
     ctrl_offset.parent = root
     ctrl_noise.parent = ctrl_offset
-    ctrl.parent = ctrl_noise
+    ctrl_camera.parent = ctrl_noise
     ctrl_aim.parent = ctrl_noise
     left_corner.parent = ctrl_aim
     right_corner.parent = ctrl_aim
     center.parent = ctrl_noise
+    dof_parent.parent = root
+    dof.parent = dof_parent
 
     # Jump into object mode and change bones to euler
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -396,10 +412,16 @@ def create_2d_bones(rig, cam):
     var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     # Bone constraints
-    con = pose_bones['Camera'].constraints.new('DAMPED_TRACK')
-    con.target = rig
-    con.subtarget = "MCH-Center"
-    con.track_axis = 'TRACK_NEGATIVE_Z'
+    center_con = pose_bones['Camera'].constraints.new('DAMPED_TRACK')
+    center_con.target = rig
+    center_con.subtarget = "MCH-Center"
+    center_con.track_axis = 'TRACK_NEGATIVE_Z'
+
+    dof_con = pose_bones["MCH-DOF_Parent"].constraints.new('COPY_LOCATION')
+    dof_con.target = rig
+    dof_con.subtarget = "MCH-Center"
+    dof_con.target_space = 'POSE'
+    dof_con.owner_space = 'POSE'
 
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
@@ -409,6 +431,7 @@ def create_2d_bones(rig, cam):
     aim_widget = create_aim_widget("Aim")
     left_widget = create_corner_widget("Left_Corner", reverse=True)
     right_widget = create_corner_widget("Right_Corner")
+    dof_widget = create_cross_widget("DOF")
 
     # Add the custom bone shapes
     pose_bones["Root"].custom_shape = root_widget
@@ -418,6 +441,7 @@ def create_2d_bones(rig, cam):
     pose_bones["Aim"].custom_shape = aim_widget
     pose_bones["Left_Corner"].custom_shape = left_widget
     pose_bones["Right_Corner"].custom_shape = right_widget
+    pose_bones["DOF"].custom_shape = dof_widget
 
     # Set bone shape transforms
     pose_bones["Camera_Offset"].custom_shape_rotation_euler.x = pi / 2.0
@@ -437,14 +461,16 @@ def create_2d_bones(rig, cam):
     # Camera settings
 
     cam.data.sensor_fit = "HORIZONTAL"  # Avoids distortion in portrait format
+    cam.data.dof.focus_object = rig
+    cam.data.dof.focus_subtarget = "DOF"
 
     # Property to switch between rotation and switch mode
-    pose_bones["Camera"]['rotation_shift'] = 0.0
-    ui_data = pose_bones["Camera"].id_properties_ui('rotation_shift')
+    pose_bones["Camera"]["rotation_shift"] = 0.0
+    ui_data = pose_bones["Camera"].id_properties_ui("rotation_shift")
     ui_data.update(min=0.0, max=1.0, description="rotation_shift")
 
     # Rotation / shift switch driver
-    driver = con.driver_add('influence').driver
+    driver = center_con.driver_add('influence').driver
     driver.expression = '1 - rotation_shift'
 
     var = driver.variables.new()
