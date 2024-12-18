@@ -1,5 +1,5 @@
 # Add Camera Rigs
-../../_images/addons_camera_camera-rigs_ui.png
+
 
 This add-on extends the functionality of a camera by creating control rigs with widgets and adds a panel to quickly access the camera’s settings from the 3D Viewport.
 
@@ -22,7 +22,7 @@ Add a Add ‣ Camera ‣ Dolly Camera Rig, Crane Camera Rig or 2D Camera Rig. Th
 When the Rig is selected, the camera properties will be displayed in the Sidebar.
 
 # 3D Rigs (Dolly & Crane)
-This rigs are designed to make it easier to achieve the motion of a real world dolly camrea rig and crane camera rig.  They have a similar set up, however, the Crane Rig has 2 extra controls for the height and the length of the crane arm. This arm makes it easier to achieve the arcing motion of the real life crane rig.  
+These rigs are designed to make it easier to achieve the motion of a real world dolly camrea rig and crane camera rig.  They have a similar set up, however, the Crane Rig has 2 extra controls for the height and the length of the crane arm. This arm makes it easier to achieve the arcing motion of the real life crane rig.  
 
 ![alt text](images/dolly-and-crane-rigs.png)
 ## Controls
@@ -48,43 +48,46 @@ This control is designed to increase or decrease the length of the crane boom ar
 This rig is designed to provide fine controls over the framing while aiming at one direction. With it, you can frame the action by moving two of the corners of the camera, instead of moving and rotating it. It produces smooth movements that would be hard to achieve without it, by using complex drivers to calculate the appropriate camera settings.
 ![alt text](images/2d-rig.png)
 
-### Root Bone
+### Root
 This is the parent of the entire rig. It is the only bone that you should rotate to aim approximately at the action.
 
-### Left_corner and Right_corner Bones
+### Left_corner and Right_corner
 These are the most important bones in this rig. You can move them to quickly set and animate a framing. The camera will adjust its parameters to adapt to this framing (focal length, rotation / shift). They should always be at the same height (Y axis in the camera’s coordinate system).
 
-### Camera Bone
+### Camera
 You can move the camera around, and it will compensate its settings to frame the two corners. For instance, if you leave the corners fixed on both sides of the subject and move the camera forward, you will achieve an efficient dolly zoom effect.
 
 Rotation is the default mode, and will rotate the camera to aim at and keep the corners in its frame. Shift mode, on the other hand, uses the Shift properties on the Camera to achieve a cropping effect instead of a pan.
 
-### Limitations
-When moving the corners too far to the side in rotation mode, perspective makes the rig much less accurate.
+### 2d Rig Limitations
+ - When moving the corners too far to the side in rotation mode, perspective makes the rig much less accurate.
 
-Rotation mode is unsupported for orthographic cameras.
+ - Rotation mode is unsupported for orthographic cameras.
 
 # Interface
 ## Widgets
-When a rig is built, the add-on will create a collection for all the custom bone shapes (named Widgets). When the custom shapes (widgets) are built they will use the prefix WGT-. If you have more than one rig in the scene, it will use the same widgets in the same collection rather than duplicating them. The default collection name and the widget prefix can be set in the preferences of the add-on. (This will not change the name of any existing widgets or collection, only ones that are created after you change the setting.)
+When a rig is built, the add-on will create a collection for all the custom bone shapes (named Widgets). By default when the widgets are built they will use the prefix "WGT-". If you have more than one rig in the scene, it will use the same widgets in the same collection rather than duplicating them. The default collection name and the widget prefix can be set in the preferences of the add-on. (This will not change the name of any existing widgets or collection, only ones that are created after you change the setting.)
 
-../../_images/addons_camera_camera-rigs_prefs.png
-Panel
-Reference
 
+![alt text](images/add-camera-rigs_user-preferences.png)
 ### Mode:
 All Modes
 
-### Panel:
+### UI Panel:
 3D Viewport ‣ Sidebar ‣ Item ‣ Camera Rig
 
-The panel will display the most used camera settings. Only the added features will be explain here, for more information refer to the Cameras section.
 
-### Set DOF Bone
-The Set DOF Bone button will automatically set up the camera so that it uses the camera rig’s Aim bone as a target for the depth of field (DOF).
+The UI panel will display the most used camera settings. Only the added features will be explain here, for more information refer to the Cameras section.  
+#### Dolly Rig UI
+![alt text](images/dolly-rig-ui.png)
+#### 2d Rig UI
+![alt text](images/2d-camera-rig-ui.png)
+
+### Set DOF to Aim
+The Set DOF to Aim button will automatically set up the camera so that it uses the camera rig’s Aim control as a target for the depth of field (DOF).
 
 ### Focal Distance/F-Stop/Focal Length
-These are custom properties on the camera bone that drive the equivalent setting on the actual camera. This makes it animatable inside the armature object rather than having to animate the armature and the camera.
+These are custom properties on the camera control bone that drive the equivalent setting on the actual camera. This makes it animatable inside the armature object rather than having to animate the armature and the camera.
 
 ### Show in Front
 Will make the rig object visible through all other geometry. (Useful if you have a fly through scene or if other meshes are in the way.)
