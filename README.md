@@ -92,6 +92,7 @@ When you enable this operator, the Aim control will be linked to the focal lengt
 The Aim bone will turn red to give visual feedback that Dolly Zoom mode is active.  There is a further offset value that can be animated if you wish, and when you turn this mode off, it will keep the current focal length.
 
 <video controls src="images/01-dolly-zoom.mp4" title="Set Dolly Zoom"></video>
+https://github.com/waylow/add_camera_rigs/blob/dolly-zoom/images/01-dolly-zoom.mp4
 
  ### Shift To Pivot
  This operator will shift the Camera and Aim controls directly over the top of the Root control while maintaining their current distance from each other.  This is useful if you want to use the rig for a turnaround shot.
