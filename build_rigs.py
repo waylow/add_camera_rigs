@@ -481,7 +481,7 @@ def create_2d_bones(rig, cam):
 
     # Focal length driver
     driver = cam.data.driver_add("lens").driver
-    driver.expression = "abs({distance_z} - (left_z + right_z)/2 - aim_z + cam_z) * 36 / frame_width".format(
+    driver.expression = "abs({distance_z} - (left_z + right_z)/2 - aim_z + cam_z) * 36 / (frame_width or 1.0)".format(
         distance_z=corner_distance_z)
 
     var = driver.variables.new()
@@ -534,7 +534,7 @@ def create_2d_bones(rig, cam):
 
     # Shift driver X
     driver = cam.data.driver_add("shift_x").driver
-    driver.expression = "rotation_shift * (((left_x + right_x)/2 + aim_x - cam_x) / frame_width)"
+    driver.expression = "rotation_shift * (((left_x + right_x)/2 + aim_x - cam_x) / (frame_width or 1.0))"
 
     var = driver.variables.new()
     var.name = 'rotation_shift'
@@ -583,7 +583,7 @@ def create_2d_bones(rig, cam):
     driver.expression = (
         "rotation_shift * -("
         "({distance_y} - (left_y + right_y)/2 - aim_y + cam_y)"
-        " / frame_width - (res_y/res_x)/2)"
+        " / (frame_width or 1.0) - (res_y/res_x)/2)"
     ).format(distance_y=corner_distance_y)
 
     var = driver.variables.new()
