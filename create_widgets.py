@@ -73,6 +73,26 @@ def create_circle_widget(name, radius=1.0):
     return obj
 
 
+def create_star_widget(name, radius=1.0):
+    """Create a star-shaped widget"""
+    obj = create_widget(name)
+    if not obj.data.vertices:
+        vert_n = 32
+        verts = []
+        for n in range(vert_n):
+            angle = n / vert_n * 2*pi
+            loc = Vector((cos(angle) * radius, sin(angle) * radius, 0.0))
+            if n % 2:
+                loc.length = radius * 0.83
+            verts.append(loc)
+        edges = [(n, (n+1) % len(verts)) for n in range(len(verts))]
+
+        mesh = obj.data
+        mesh.from_pydata(verts, edges, ())
+        mesh.update()
+    return obj
+
+
 def create_root_widget(name):
     """Create a compass-shaped widget"""
     obj = create_widget(name)

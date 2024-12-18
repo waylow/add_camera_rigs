@@ -8,10 +8,14 @@ from bpy_extras import object_utils
 from mathutils import Vector
 from math import pi
 
-from .create_widgets import (create_root_widget,
-                             create_camera_widget, create_camera_offset_widget,
-                             create_aim_widget, create_circle_widget,
-                             create_corner_widget)
+from .create_widgets import (
+    create_root_widget,
+    create_camera_widget,
+    create_camera_offset_widget,
+    create_aim_widget,
+    create_corner_widget,
+    create_star_widget,
+)
 
 
 def create_prop_driver(rig, cam, prop_from, prop_to):
@@ -234,30 +238,49 @@ def create_2d_bones(rig, cam):
     # Add new bones
     bones = rig.data.edit_bones
     root = bones.new("Root")
-    root.tail = Vector((0.0, 0.0, 1.0))
+    root.tail = (0.0, 0.0, 1.0)
     root.show_wire = True
     rig.data.collections.new(name="Controls")
     rig.data.collections['Controls'].assign(root)
 
+    ctrl_offset = bones.new("Camera_Offset")
+    ctrl_offset.head = (0.0, 0.0, 1.7)
+    ctrl_offset.tail = (0.0, 0.0, 2.7)
+    ctrl_offset.show_wire = True
+    rig.data.collections['Controls'].assign(ctrl_offset)
+
+    ctrl_noise = bones.new("Noise")
+    ctrl_noise.head = (0.0, 0.0, 1.7)
+    ctrl_noise.tail = (0.0, 0.0, 2.7)
+    ctrl_noise.show_wire = True
+    rig.data.collections['Controls'].assign(ctrl_noise)
+
     ctrl = bones.new('Camera')
-    ctrl.tail = Vector((0.0, 0.0, 1.0))
+    ctrl.head = (0.0, 0.0, 1.7)
+    ctrl.tail = (0.0, 0.0, 2.7)
     ctrl.show_wire = True
     rig.data.collections['Controls'].assign(ctrl)
 
+    ctrl_aim = bones.new("Aim")
+    ctrl_aim.head = (0.0, 10.0, 1.7)
+    ctrl_aim.tail = (0.0, 10.0, 2.7)
+    ctrl_aim.show_wire = True
+    rig.data.collections['Controls'].assign(ctrl_aim)
+
     left_corner = bones.new("Left_Corner")
-    left_corner.head = (-3, 10, -2)
+    left_corner.head = (-3.0, 10.0, 0.0)
     left_corner.tail = left_corner.head + Vector((0.0, 0.0, 1.0))
     left_corner.show_wire = True
     rig.data.collections['Controls'].assign(left_corner)
 
     right_corner = bones.new("Right_Corner")
-    right_corner.head = (3, 10, -2)
+    right_corner.head = (3.0, 10.0, 0.0)
     right_corner.tail = right_corner.head + Vector((0.0, 0.0, 1.0))
     right_corner.show_wire = True
     rig.data.collections['Controls'].assign(right_corner)
 
     corner_distance_x = (left_corner.head - right_corner.head).length
-    corner_distance_y = -left_corner.head.z
+    corner_distance_y = ctrl.head.z - left_corner.head.z
     corner_distance_z = left_corner.head.y
     rig.data.collections['Controls'].assign(root)
 
@@ -271,10 +294,13 @@ def create_2d_bones(rig, cam):
     center.show_wire = True
 
     # Setup hierarchy
-    ctrl.parent = root
-    left_corner.parent = root
-    right_corner.parent = root
-    center.parent = root
+    ctrl_offset.parent = root
+    ctrl_noise.parent = ctrl_offset
+    ctrl.parent = ctrl_noise
+    ctrl_aim.parent = ctrl_noise
+    left_corner.parent = ctrl_aim
+    right_corner.parent = ctrl_aim
+    center.parent = ctrl_noise
 
     # Jump into object mode and change bones to euler
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -282,87 +308,120 @@ def create_2d_bones(rig, cam):
     for bone in pose_bones:
         bone.rotation_mode = 'XYZ'
 
-    # Lens property
-    pb = pose_bones['Camera']
-    pb["lens"] = 50.0
-    ui_data = pb.id_properties_ui("lens")
-    ui_data.update(min=1.0, max=1000000.0, soft_max = 5000.0, default=50.0)
-
     # Bone drivers
     center_drivers = pose_bones["MCH-Center"].driver_add("location")
 
     # Center X driver
     driver = center_drivers[0].driver
-    driver.type = 'AVERAGE'
+    driver.expression = "aim + (left + right) / 2.0"
 
-    for corner in ('left', 'right'):
+    for corner in ("left", "right"):
         var = driver.variables.new()
         var.name = corner
         var.type = 'TRANSFORMS'
         var.targets[0].id = rig
-        var.targets[0].bone_target = corner.capitalize() + '_Corner'
+        var.targets[0].bone_target = corner.capitalize() + "_Corner"
         var.targets[0].transform_type = 'LOC_X'
         var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
+    var = driver.variables.new()
+    var.name = "aim"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Aim"
+    var.targets[0].transform_type = 'LOC_X'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
+
     # Center Y driver
     driver = center_drivers[1].driver
-    driver.type = 'SCRIPTED'
-
-    driver.expression = '({distance_x} - (left_x-right_x))*(res_y/res_x)/2 + (left_y + right_y)/2'.format(
+    driver.expression = "({distance_x} - (left_x-right_x))*(res_y/res_x)/2 + aim_y + (left_y + right_y)/2".format(
         distance_x=corner_distance_x)
 
-    for direction in ('x', 'y'):
-        for corner in ('left', 'right'):
+    for corner in ("left", "right"):
+        for direction in ("x", "y"):
             var = driver.variables.new()
-            var.name = '%s_%s' % (corner, direction)
+            var.name = "%s_%s" % (corner, direction)
             var.type = 'TRANSFORMS'
             var.targets[0].id = rig
-            var.targets[0].bone_target = corner.capitalize() + '_Corner'
+            var.targets[0].bone_target = corner.capitalize() + "_Corner"
             var.targets[0].transform_type = 'LOC_' + direction.upper()
             var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
+    for direction in ("x", "y"):
         var = driver.variables.new()
-        var.name = 'res_' + direction
+        var.name = "aim_%s" % direction
+        var.type = 'TRANSFORMS'
+        var.targets[0].id = rig
+        var.targets[0].bone_target = "Aim"
+        var.targets[0].transform_type = 'LOC_' + direction.upper()
+        var.targets[0].transform_space = 'TRANSFORM_SPACE'
+
+    for direction in ("x", "y"):
+        var = driver.variables.new()
+        var.name = "res_" + direction
         var.type = 'CONTEXT_PROP'
         var.targets[0].context_property = 'ACTIVE_SCENE'
-        var.targets[0].data_path = 'render.resolution_' + direction
+        var.targets[0].data_path = "render.resolution_" + direction
 
     # Center Z driver
     driver = center_drivers[2].driver
-    driver.type = 'AVERAGE'
+    driver.expression = "aim + (left + right) / 2.0"
 
-    for corner in ('left', 'right'):
+    for corner in ("left", "right"):
         var = driver.variables.new()
         var.name = corner
         var.type = 'TRANSFORMS'
         var.targets[0].id = rig
-        var.targets[0].bone_target = corner.capitalize() + '_Corner'
+        var.targets[0].bone_target = corner.capitalize() + "_Corner"
         var.targets[0].transform_type = 'LOC_Z'
         var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
+    var = driver.variables.new()
+    var.name = "aim"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Aim"
+    var.targets[0].transform_type = 'LOC_Z'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
+
     # Bone constraints
-    con = pose_bones["Camera"].constraints.new('DAMPED_TRACK')
+    con = pose_bones['Camera'].constraints.new('DAMPED_TRACK')
     con.target = rig
     con.subtarget = "MCH-Center"
     con.track_axis = 'TRACK_NEGATIVE_Z'
 
     # Build the widgets
+    root_widget = create_root_widget("Camera_Root")
+    camera_offset_widget = create_camera_offset_widget("Camera_Offset")
+    noise_widget = create_star_widget("Noise", radius=0.48)
+    camera_widget = create_camera_widget("Camera")
+    aim_widget = create_aim_widget("Aim")
     left_widget = create_corner_widget("Left_Corner", reverse=True)
     right_widget = create_corner_widget("Right_Corner")
-    parent_widget = create_circle_widget("Root", radius=0.5)
-    camera_widget = create_circle_widget("Camera_2D", radius=0.3)
 
     # Add the custom bone shapes
+    pose_bones["Root"].custom_shape = root_widget
+    pose_bones["Camera_Offset"].custom_shape = camera_offset_widget
+    pose_bones["Noise"].custom_shape = noise_widget
+    pose_bones["Camera"].custom_shape = camera_widget
+    pose_bones["Aim"].custom_shape = aim_widget
     pose_bones["Left_Corner"].custom_shape = left_widget
     pose_bones["Right_Corner"].custom_shape = right_widget
-    pose_bones["Root"].custom_shape = parent_widget
-    pose_bones["Camera"].custom_shape = camera_widget
+
+    # Set bone shape transforms
+    pose_bones["Camera_Offset"].custom_shape_rotation_euler.x = pi / 2.0
+    pose_bones["Camera"].custom_shape_rotation_euler.x = pi / 2.0
+    pose_bones["Aim"].custom_shape_rotation_euler.x = pi / 2.0
 
     # Lock the relevant loc, rot and scale
-    pose_bones["Left_Corner"].lock_rotation = (True,) * 3
-    pose_bones["Right_Corner"].lock_rotation = (True,) * 3
+    pose_bones["Root"].lock_scale = (True,) * 3
+    pose_bones["Camera_Offset"].lock_scale = (True,) * 3
+    pose_bones["Noise"].lock_scale = (True,) * 3
     pose_bones["Camera"].lock_rotation = (True,) * 3
     pose_bones["Camera"].lock_scale = (True,) * 3
+    pose_bones["Aim"].lock_rotation = (True,) * 3
+    pose_bones["Left_Corner"].lock_rotation = (True,) * 3
+    pose_bones["Right_Corner"].lock_rotation = (True,) * 3
 
     # Camera settings
 
@@ -384,8 +443,8 @@ def create_2d_bones(rig, cam):
     var.targets[0].data_path = 'pose.bones["Camera"]["rotation_shift"]'
 
     # Focal length driver
-    driver = pose_bones["Camera"].driver_add('["lens"]').driver
-    driver.expression = 'abs({distance_z} - (left_z + right_z)/2 + cam_z) * 36 / frame_width'.format(
+    driver = cam.data.driver_add("lens").driver
+    driver.expression = "abs({distance_z} - (left_z + right_z)/2 - aim_z + cam_z) * 36 / frame_width".format(
         distance_z=corner_distance_z)
 
     var = driver.variables.new()
@@ -398,9 +457,9 @@ def create_2d_bones(rig, cam):
     var.targets[1].bone_target = "Right_Corner"
     var.targets[1].transform_space = 'WORLD_SPACE'
 
-    for corner in ('left', 'right'):
+    for corner in ("left", "right"):
         var = driver.variables.new()
-        var.name = corner + '_z'
+        var.name = corner + "_z"
         var.type = 'TRANSFORMS'
         var.targets[0].id = rig
         var.targets[0].bone_target = corner.capitalize() + '_Corner'
@@ -408,37 +467,53 @@ def create_2d_bones(rig, cam):
         var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     var = driver.variables.new()
-    var.name = 'cam_z'
+    var.name = "cam_z"
     var.type = 'TRANSFORMS'
     var.targets[0].id = rig
     var.targets[0].bone_target = "Camera"
     var.targets[0].transform_type = 'LOC_Z'
     var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
-    # Orthographic scale driver
-    driver = cam.data.driver_add('ortho_scale').driver
-    driver.expression = 'abs({distance_x} - (left_x - right_x))'.format(distance_x=corner_distance_x)
+    var = driver.variables.new()
+    var.name = "aim_z"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Aim"
+    var.targets[0].transform_type = 'LOC_Z'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
-    for corner in ('left', 'right'):
+    # Orthographic scale driver
+    driver = cam.data.driver_add("ortho_scale").driver
+    driver.expression = "abs({distance_x} - (left_x - right_x))".format(distance_x=corner_distance_x)
+
+    for corner in ("left", "right"):
         var = driver.variables.new()
-        var.name = corner + '_x'
+        var.name = corner + "_x"
         var.type = 'TRANSFORMS'
         var.targets[0].id = rig
-        var.targets[0].bone_target = corner.capitalize() + '_Corner'
+        var.targets[0].bone_target = corner.capitalize() + "_Corner"
         var.targets[0].transform_type = 'LOC_X'
         var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     # Shift driver X
-    driver = cam.data.driver_add('shift_x').driver
-
-    driver.expression = 'rotation_shift * (((left_x + right_x)/2 - cam_x) * lens / abs({distance_z} - (left_z + right_z)/2 + cam_z) / 36)'.format(
-        distance_z=corner_distance_z)
+    driver = cam.data.driver_add("shift_x").driver
+    driver.expression = "rotation_shift * (((left_x + right_x)/2 + aim_x - cam_x) / frame_width)"
 
     var = driver.variables.new()
     var.name = 'rotation_shift'
     var.type = 'SINGLE_PROP'
     var.targets[0].id = rig
     var.targets[0].data_path = 'pose.bones["Camera"]["rotation_shift"]'
+
+    var = driver.variables.new()
+    var.name = 'frame_width'
+    var.type = 'LOC_DIFF'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Left_Corner"
+    var.targets[0].transform_space = 'WORLD_SPACE'
+    var.targets[1].id = rig
+    var.targets[1].bone_target = "Right_Corner"
+    var.targets[1].transform_space = 'WORLD_SPACE'
 
     for direction in ('x', 'z'):
         for corner in ('left', 'right'):
@@ -450,25 +525,29 @@ def create_2d_bones(rig, cam):
             var.targets[0].transform_type = 'LOC_' + direction.upper()
             var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
-        var = driver.variables.new()
-        var.name = 'cam_' + direction
-        var.type = 'TRANSFORMS'
-        var.targets[0].id = rig
-        var.targets[0].bone_target = "Camera"
-        var.targets[0].transform_type = 'LOC_' + direction.upper()
-        var.targets[0].transform_space = 'TRANSFORM_SPACE'
+    var = driver.variables.new()
+    var.name = "aim_x"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Aim"
+    var.targets[0].transform_type = 'LOC_X'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     var = driver.variables.new()
-    var.name = 'lens'
-    var.type = 'SINGLE_PROP'
+    var.name = "cam_x"
+    var.type = 'TRANSFORMS'
     var.targets[0].id = rig
-    var.targets[0].data_path = 'pose.bones["Camera"]["lens"]'
+    var.targets[0].bone_target = "Camera"
+    var.targets[0].transform_type = "LOC_X"
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     # Shift driver Y
     driver = cam.data.driver_add('shift_y').driver
-
-    driver.expression = 'rotation_shift * -(({distance_y} - (left_y + right_y)/2 + cam_y) * lens / abs({distance_z} - (left_z + right_z)/2 + cam_z) / 36 - (res_y/res_x)/2)'.format(
-        distance_y=corner_distance_y, distance_z=corner_distance_z)
+    driver.expression = (
+        "rotation_shift * -("
+        "({distance_y} - (left_y + right_y)/2 - aim_y + cam_y)"
+        " / frame_width - (res_y/res_x)/2)"
+    ).format(distance_y=corner_distance_y)
 
     var = driver.variables.new()
     var.name = 'rotation_shift'
@@ -476,23 +555,40 @@ def create_2d_bones(rig, cam):
     var.targets[0].id = rig
     var.targets[0].data_path = 'pose.bones["Camera"]["rotation_shift"]'
 
-    for direction in ('y', 'z'):
-        for corner in ('left', 'right'):
-            var = driver.variables.new()
-            var.name = '%s_%s' % (corner, direction)
-            var.type = 'TRANSFORMS'
-            var.targets[0].id = rig
-            var.targets[0].bone_target = corner.capitalize() + '_Corner'
-            var.targets[0].transform_type = 'LOC_' + direction.upper()
-            var.targets[0].transform_space = 'TRANSFORM_SPACE'
+    var = driver.variables.new()
+    var.name = 'frame_width'
+    var.type = 'LOC_DIFF'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Left_Corner"
+    var.targets[0].transform_space = 'WORLD_SPACE'
+    var.targets[1].id = rig
+    var.targets[1].bone_target = "Right_Corner"
+    var.targets[1].transform_space = 'WORLD_SPACE'
 
+    for corner in ("left", "right"):
         var = driver.variables.new()
-        var.name = 'cam_' + direction
+        var.name = "%s_y" % corner
         var.type = 'TRANSFORMS'
         var.targets[0].id = rig
-        var.targets[0].bone_target = "Camera"
-        var.targets[0].transform_type = 'LOC_' + direction.upper()
+        var.targets[0].bone_target = corner.capitalize() + "_Corner"
+        var.targets[0].transform_type = 'LOC_Y'
         var.targets[0].transform_space = 'TRANSFORM_SPACE'
+
+    var = driver.variables.new()
+    var.name = "aim_y"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Aim"
+    var.targets[0].transform_type = 'LOC_Y'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
+
+    var = driver.variables.new()
+    var.name = "cam_y"
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = "Camera"
+    var.targets[0].transform_type = 'LOC_Y'
+    var.targets[0].transform_space = 'TRANSFORM_SPACE'
 
     for direction in ('x', 'y'):
         var = driver.variables.new()
@@ -501,12 +597,6 @@ def create_2d_bones(rig, cam):
         var.type = 'CONTEXT_PROP'
         var.targets[0].context_property = 'ACTIVE_SCENE'
         var.targets[0].data_path = 'render.resolution_' + direction
-
-    var = driver.variables.new()
-    var.name = 'lens'
-    var.type = 'SINGLE_PROP'
-    var.targets[0].id = rig
-    var.targets[0].data_path = 'pose.bones["Camera"]["lens"]'
 
 
 def build_camera_rig(context, mode):
@@ -540,10 +630,7 @@ def build_camera_rig(context, mode):
     cam.location = (0.0, -1.0, 0.0)  # Move the camera to the correct position
     cam.parent = rig
     cam.parent_type = "BONE"
-    if mode == "2D":
-        cam.parent_bone = "Camera"
-    else:
-        cam.parent_bone = "Camera_Offset"
+    cam.parent_bone = "Camera"
 
     # Change display to BBone: it just looks nicer
     rig.data.display_type = 'BBONE'
@@ -576,7 +663,6 @@ def build_camera_rig(context, mode):
     # on the armature
     create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
     create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
-    create_prop_driver(rig, cam, "lens", "lens")
 
     # Make the rig the active object
     view_layer = context.view_layer
