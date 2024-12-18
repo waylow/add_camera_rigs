@@ -51,9 +51,11 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigUIMixin):
         # Camera lens
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             col = layout.column(align=True)
-            drv = cam_data.animation_data.drivers[0]
             row = col.row(align=False)
-            if drv.driver.expression == "lens":
+            drv = cam_data.animation_data.drivers[0]
+            if cam_data.type == 'ORTHO':
+                row.prop(cam_data, "ortho_scale")
+            elif drv.driver.expression == "lens":
                 row.prop(pose_bones["Camera"], '["lens"]', text="Focal Length")
             else:
                 row.prop(pose_bones["Camera"], '["lens_offset"]',
