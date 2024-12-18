@@ -16,3 +16,15 @@ copyright = [
     "2024 Damien Picard",
     "2024 Flavio Perez",
 ]
+
+[build]
+paths_exclude_pattern = [
+  "/.git/",
+  "__pycache__/",
+  "images/",
+  ".*",
+  "*.blend",
+  "*.blend[0123456789]",
+  "*.md",
+  "*.zip",
+]
