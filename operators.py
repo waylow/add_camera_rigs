@@ -34,18 +34,31 @@ def calculate_aim_distance(obj):
     length = (camera_bone - aim_bone).to_translation().length
     return length
 
-class CameraRigMixin():
-    @classmethod
-    def poll(cls, context):
-        if context.active_object is None:
-            if hasattr(cls, "poll_message_set"):
-                cls.poll_message_set("No object is selected.")
-            return False
-        if None in get_rig_and_cam(context.active_object):
-            if hasattr(cls, "poll_message_set"):
-                cls.poll_message_set("Active object is not in a camera rig.")
-            return False
-        return True
+
+def poll_base(cls, context):
+    if context.active_object is None:
+        if hasattr(cls, "poll_message_set"):
+            cls.poll_message_set("No object is selected.")
+        return False
+    if None in get_rig_and_cam(context.active_object):
+        if hasattr(cls, "poll_message_set"):
+            cls.poll_message_set("Active object is not in a camera rig.")
+        return False
+    return True
+
+
+def poll_perspective(cls, context):
+    if not poll_base(cls, context):
+        return False
+
+    rig, cam = get_rig_and_cam(context.active_object)
+    if cam.data.type == 'ORTHO':
+        cls.poll_message_set("This operator is not supported for orthographic cameras.")
+        return False
+    if rig["rig_id"].lower() == '2d_rig':
+        cls.poll_message_set("This operator is not supported for 2D camera rigs.")
+        return False
+    return True
 
 
 class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
@@ -55,13 +68,9 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.active_object is None:
-            cls.poll_message_set("No object is selected.")
-            return False
-        rig, cam = get_rig_and_cam(context.active_object)
-        if cam is None:
-            cls.poll_message_set("Active object is not in a camera rig.")
-            return False
+        return poll_base(cls, context)
+
+        _rig, cam = get_rig_and_cam(context.active_object)
         if cam is context.scene.camera:
             cls.poll_message_set("Selected camera is already the scene camera.")
             return False
@@ -69,16 +78,19 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
-        scene_cam = context.scene.camera
 
         context.scene.camera = cam
         return {'FINISHED'}
 
 
-class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator):
     bl_idname = "add_camera_rigs.add_marker_bind"
     bl_label = "Add Marker and Bind Camera"
     bl_description = "Add marker to current frame then bind rig camera to it (for camera switching)"
+
+    @classmethod
+    def poll(cls, context):
+        return poll_base(cls, context)
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
@@ -92,10 +104,14 @@ class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator, CameraRigMixin):
         return {'FINISHED'}
 
 
-class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator):
     bl_idname = "add_camera_rigs.set_dof_bone"
     bl_label = "Set DOF to Aim"
     bl_description = "Set the Aim bone as a DOF target"
+
+    @classmethod
+    def poll(cls, context):
+        return poll_base(cls, context)
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
@@ -108,37 +124,39 @@ class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator, CameraRigMixin):
         return {'FINISHED'}
 
 
-class ADD_CAMERA_RIGS_OT_set_dolly_zoom(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_set_dolly_zoom(Operator):
     bl_idname = "add_camera_rigs.set_dolly_zoom"
     bl_label = "Set Dolly Zoom"
     bl_description = "Use the aim bone as a focal length (Dolly Zoom effect)"
 
+    @classmethod
+    def poll(cls, context):
+        return poll_perspective(cls, context)
+
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
 
-        if rig["rig_id"].lower() == '2d_rig': 
-            return {'FINISHED'}
-
         value = calculate_aim_distance(rig)
         drv = cam.data.animation_data.drivers[0]
-        drv.driver.expression = '(distance * (lens+lens_offset) / %s ) / root_scale' %value
+        drv.driver.expression = '(distance * (lens+lens_offset) / %s ) / root_scale' % value
 
-        #set the bone color to default
+        # set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'THEME01'
 
         return {'FINISHED'}
 
 
-class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator):
     bl_idname = "add_camera_rigs.remove_dolly_zoom"
     bl_label = "Remove Dolly Zoom"
     bl_description = "Disconnect the aim bone as a focal length (Dolly Zoom effect)"
 
+    @classmethod
+    def poll(cls, context):
+        return poll_perspective(cls, context)
+
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
-
-        if rig["rig_id"].lower() == '2d_rig': 
-            return {'FINISHED'}
 
         lens_value = cam.data.lens
 
@@ -156,10 +174,14 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator, CameraRigMixin):
         return {'FINISHED'}
 
 
-class ADD_CAMERA_RIGS_OT_shift_to_pivot(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_shift_to_pivot(Operator):
     bl_idname = "add_camera_rigs.shift_to_pivot"
     bl_label = "Shift To Pivot"
     bl_description = "Offset the Camera and Aim such that the Aim bone is above the Root control"
+
+    @classmethod
+    def poll(cls, context):
+        return poll_base(cls, context)
 
     def execute(self, context):
         rig, cam = get_rig_and_cam(context.active_object)
@@ -178,7 +200,7 @@ class ADD_CAMERA_RIGS_OT_shift_to_pivot(Operator, CameraRigMixin):
         rig.pose.bones["Camera"].matrix = rig.pose.bones["Camera"].matrix @ camera_offset_matrix
         return {'FINISHED'}
 
-class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
+class ADD_CAMERA_RIGS_OT_swap_lens(Operator):
     bl_idname = "add_camera_rigs.swap_lens"
     bl_label = "Swap Lens"
     bl_description = "Set the focal length to a specific value and shift the camera to match the same framing"
@@ -192,6 +214,10 @@ class ADD_CAMERA_RIGS_OT_swap_lens(Operator, CameraRigMixin):
         subtype='DISTANCE_CAMERA',
         description="The value of the new focal length",
     )
+
+    @classmethod
+    def poll(cls, context):
+        return poll_perspective(cls, context)
 
     def draw(self, context):
         layout = self.layout
