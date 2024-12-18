@@ -253,42 +253,42 @@ def create_2d_bones(rig, cam):
     collection_controls.assign(root)
 
     ctrl_offset = bones.new("Camera_Offset")
-    ctrl_offset.head = (0.0, 0.0, 1.7)
-    ctrl_offset.tail = (0.0, 0.0, 2.7)
+    ctrl_offset.head = (0.0, 0.0, 0.0)
+    ctrl_offset.tail = (0.0, 0.0, 1.0)
     ctrl_offset.show_wire = True
     ctrl_offset.color.palette = 'THEME04'
     collection_offsets.assign(ctrl_offset)
 
     ctrl_noise = bones.new("Noise")
-    ctrl_noise.head = (0.0, 0.0, 1.7)
-    ctrl_noise.tail = (0.0, 0.0, 2.7)
+    ctrl_noise.head = (0.0, 0.0, 0.0)
+    ctrl_noise.tail = (0.0, 0.0, 1.0)
     ctrl_noise.show_wire = True
     ctrl_noise.color.palette = 'THEME09'
     collection_extras.assign(ctrl_noise)
 
     ctrl_camera = bones.new("Camera")
-    ctrl_camera.head = (0.0, 0.0, 1.7)
-    ctrl_camera.tail = (0.0, 0.0, 2.7)
+    ctrl_camera.head = (0.0, 0.0, 0.0)
+    ctrl_camera.tail = (0.0, 0.0, 1.0)
     ctrl_camera.show_wire = True
     ctrl_camera.color.palette = 'THEME02'
     collection_controls.assign(ctrl_camera)
 
     ctrl_aim = bones.new("Aim")
-    ctrl_aim.head = (0.0, 10.0, 1.7)
-    ctrl_aim.tail = (0.0, 10.0, 2.7)
+    ctrl_aim.head = (0.0, 10.0, 0.0)
+    ctrl_aim.tail = (0.0, 10.0, 1.0)
     ctrl_aim.show_wire = True
     ctrl_aim.color.palette = 'THEME04'
     collection_offsets.assign(ctrl_aim)
 
     left_corner = bones.new("Left_Corner")
-    left_corner.head = (-3.0, 10.0, 0.0)
+    left_corner.head = (-3.0, 10.0, -1.7)
     left_corner.tail = left_corner.head + Vector((0.0, 0.0, 1.0))
     left_corner.show_wire = True
     left_corner.color.palette = 'THEME02'
     collection_controls.assign(left_corner)
 
     right_corner = bones.new("Right_Corner")
-    right_corner.head = (3.0, 10.0, 0.0)
+    right_corner.head = (3.0, 10.0, -1.7)
     right_corner.tail = right_corner.head + Vector((0.0, 0.0, 1.0))
     right_corner.show_wire = True
     right_corner.color.palette = 'THEME02'
