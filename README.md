@@ -86,6 +86,23 @@ The UI panel will display the most used camera settings. Only the added features
 ### Set DOF to Aim
 The Set DOF to Aim button will automatically set up the camera so that it uses the camera rig’s Aim control as a target for the depth of field (DOF).
 
+### Set Dolly Zoom
+When you enable this operator, the Aim control will be linked to the focal length.  This makes it very easy to achieve the classic Dolly Zoom effect.
+
+The Aim bone will turn red to give visual feedback that Dolly Zoom mode is active.  There is a further offset value that can be animated if you wish, and when you turn this mode off, it will keep the current focal length.
+
+<video controls src="images/01-dolly-zoom.mp4" title="Set Dolly Zoom"></video>
+
+ ### Shift To Pivot
+ This operator will shift the Camera and Aim controls directly over the top of the Root control while maintaining their current distance from each other.  This is useful if you want to use the rig for a turnaround shot.
+
+ <video controls src="images/02-shift-to-pivot.mp4" title="Shift To Pivot"></video>
+
+ ### Swap Lens
+ When you activate the Swap Lens feature you can set the focal length of the camera and it will adjust the camera position to maintain the same framing.  This is useful, for example when you have set up your camera framing on a 50mm lens but you then you need to change it to 70mm.  Normally you would have to change the lens and then reposition the camera, however this operator will do that for you.
+
+<video controls src="images/03-swap-lens.mp4" title="Swap Lens"></video>
+
 ### Focal Distance/F-Stop/Focal Length
 These are custom properties on the camera control bone that drive the equivalent setting on the actual camera. This makes it animatable inside the armature object rather than having to animate the armature and the camera.
 
@@ -98,7 +115,7 @@ The Lock Camera Select is a toggle button to make the camera unselectable (so yo
 ### Tracking (Aim Lock)
 This slider controls the Track To constraint on the control bone. Turn it off and the bone will not point to the aim bone anymore.
 
-../../_images/addons_camera_camera-rigs_crane-arm.png
+![alt text](images/crane-rig-properties.png)
 ### Crane Rig Height, Arm Length
 The Arm Height and Arm Length sliders at the bottom of the UI show the Y axis scale of the relevant bone. By default, both the height and the arm length are at 1 unit in size. These values only show in the interface when a crane rig is selected, they are also animatable.
 
@@ -114,5 +131,5 @@ If you wish to switch cameras during an animation, you can do this with the Add 
 ## Troubleshooting
 If the Aim tracking or 2D rig are not functioning, check that you have “Auto Run Python Scripts” enabled in the Preferences Preferences ‣ Save & Load ‣ Auto Run Python Scripts.
 
-See also:
-A blog post explaining the 2D rig by its authors.
+### See also:  
+A [blog post](https://lacuisine.tech/2d-camera-rig/) explaining the 2D rig by its authors.

@@ -94,7 +94,7 @@ class ADD_CAMERA_RIGS_OT_add_marker_bind(Operator, CameraRigMixin):
 
 class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator, CameraRigMixin):
     bl_idname = "add_camera_rigs.set_dof_bone"
-    bl_label = "Set DOF Bone"
+    bl_label = "Set DOF to Aim"
     bl_description = "Set the Aim bone as a DOF target"
 
     def execute(self, context):
