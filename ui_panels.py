@@ -5,13 +5,17 @@
 import bpy
 from bpy.types import Menu, Panel
 
-from .operators import get_rig_and_cam, CameraRigMixin
+from .operators import get_rig_and_cam, poll_base
 
 
-class CameraRigUIMixin(CameraRigMixin):
+class CameraRigUIMixin():
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'Item'
+
+    @classmethod
+    def poll(cls, context):
+        return poll_base(cls, context)
 
 
 class ADD_CAMERA_RIGS_MT_lens_ops(Menu):
@@ -47,9 +51,11 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigUIMixin):
         # Camera lens
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             col = layout.column(align=True)
-            drv = cam_data.animation_data.drivers[0]
             row = col.row(align=False)
-            if drv.driver.expression == "lens":
+            drv = cam_data.animation_data.drivers[0]
+            if cam_data.type == 'ORTHO':
+                row.prop(cam_data, "ortho_scale")
+            elif drv.driver.expression == "lens":
                 row.prop(pose_bones["Camera"], '["lens"]', text="Focal Length")
             else:
                 row.prop(pose_bones["Camera"], '["lens_offset"]',
