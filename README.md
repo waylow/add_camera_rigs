@@ -91,17 +91,12 @@ When you enable this operator, the Aim control will be linked to the focal lengt
 
 The Aim bone will turn red to give visual feedback that Dolly Zoom mode is active.  There is a further offset value that can be animated if you wish, and when you turn this mode off, it will keep the current focal length.
 
-<video controls src="images/01-dolly-zoom.mp4" title="Set Dolly Zoom"></video>
-
  ### Shift To Pivot
  This operator will shift the Camera and Aim controls directly over the top of the Root control while maintaining their current distance from each other.  This is useful if you want to use the rig for a turnaround shot.
-
- <video controls src="images/02-shift-to-pivot.mp4" title="Shift To Pivot"></video>
 
  ### Swap Lens
  When you activate the Swap Lens feature you can set the focal length of the camera and it will adjust the camera position to maintain the same framing.  This is useful, for example when you have set up your camera framing on a 50mm lens but you then you need to change it to 70mm.  Normally you would have to change the lens and then reposition the camera, however this operator will do that for you.
 
-<video controls src="images/03-swap-lens.mp4" title="Swap Lens"></video>
 
 ### Focal Distance/F-Stop/Focal Length
 These are custom properties on the camera control bone that drive the equivalent setting on the actual camera. This makes it animatable inside the armature object rather than having to animate the armature and the camera.
