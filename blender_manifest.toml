@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "add_camera_rigs"
 name = "Add Camera Rigs"
-version = "1.7.1"
+version = "1.8.0"
 tagline = "Adds a Camera Rig with UI"
 maintainer = "Community"
 type = "add-on"
