@@ -16,6 +16,7 @@ from .create_widgets import (
     create_circle_widget,
     create_star_widget,
     create_cross_widget,
+    create_2d_root_widget,
 )
 
 
@@ -423,19 +424,19 @@ def create_2d_bones(rig, cam):
     dof_con.owner_space = 'POSE'
 
     # Build the widgets
-    root_widget = create_root_widget("Camera_Root")
-    camera_offset_widget = create_circle_widget("Root_Offset", radius=0.68)
-    tweak_widget = create_star_widget("Root_Tweak", radius=0.48)
-    camera_widget = create_camera_widget("Camera")
-    aim_widget = create_aim_widget("Aim")
+    root_widget = create_2d_root_widget("Camera_2D_Root")
+    root_offset_widget = create_circle_widget("Camera_2D_Offset", radius=0.68)
+    root_tweak_widget = create_star_widget("Camera_2D_Tweak", radius=0.53)
+    camera_widget = create_camera_widget("Camera_2D", scale=0.5)
+    aim_widget = create_aim_widget("Camera_2D_Aim", inner_circle=False)
     left_widget = create_corner_widget("Left_Corner", reverse=True)
     right_widget = create_corner_widget("Right_Corner")
-    dof_widget = create_cross_widget("DOF")
+    dof_widget = create_cross_widget("Camera_2D_DOF")
 
     # Add the custom bone shapes
     pose_bones["Root"].custom_shape = root_widget
-    pose_bones["Root_Offset"].custom_shape = camera_offset_widget
-    pose_bones["Root_Tweak"].custom_shape = tweak_widget
+    pose_bones["Root_Offset"].custom_shape = root_offset_widget
+    pose_bones["Root_Tweak"].custom_shape = root_tweak_widget
     pose_bones["Camera"].custom_shape = camera_widget
     pose_bones["Aim"].custom_shape = aim_widget
     pose_bones["Left_Corner"].custom_shape = left_widget
