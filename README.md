@@ -48,11 +48,14 @@ This control is designed to increase or decrease the length of the crane boom ar
 This rig is designed to provide fine controls over the framing while aiming at one direction. With it, you can frame the action by moving two of the corners of the camera, instead of moving and rotating it. It produces smooth movements that would be hard to achieve without it, by using complex drivers to calculate the appropriate camera settings.
 ![alt text](images/2d-rig.png)
 
-### Root
-This is the parent of the entire rig. It is the only bone that you should rotate to aim approximately at the action.
+### Root and Noise
+Root is the parent of the entire rig. It is the only bone that you should rotate to aim approximately at the action. Root_Offset and Root_Tweak provide additional levels of parenting and can be used as offsets or to add a shake to the camera.
 
 ### Left_corner and Right_corner
 These are the most important bones in this rig. You can move them to quickly set and animate a framing. The camera will adjust its parameters to adapt to this framing (focal length, rotation / shift). They should always be at the same height (Y axis in the camera’s coordinate system).
+
+### Aim
+This control provides a convenient way to move both corners at once, to make sure a pan does not change the zoom.
 
 ### Camera
 You can move the camera around, and it will compensate its settings to frame the two corners. For instance, if you leave the corners fixed on both sides of the subject and move the camera forward, you will achieve an efficient dolly zoom effect.

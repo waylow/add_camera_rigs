@@ -118,7 +118,7 @@ class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator):
 
         cam.data.dof.focus_object = rig
         cam.data.dof.focus_subtarget = (
-            'MCH-Center' if rig["rig_id"].lower() == '2d_rig'
+            'DOF' if rig["rig_id"].lower() == '2d_rig'
             else 'MCH-Aim_shape_rotation')
 
         return {'FINISHED'}
