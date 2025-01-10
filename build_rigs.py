@@ -40,39 +40,43 @@ def create_dolly_bones(rig):
     """Create bones for the dolly camera rig"""
     bones = rig.data.edit_bones
 
+    # Add bone collections
+    collection_controls = rig.data.collections.new(name="Controls")
+    collection_mch = rig.data.collections.new(name="MCH")
+    collection_mch.is_visible = False
+
     # Add new bones
     root = bones.new("Root")
     root.tail = (0.0, 1.0, 0.0)
     root.show_wire = True
-    rig.data.collections.new(name="Controls")
-    rig.data.collections['Controls'].assign(root)
+    root.color.palette = 'THEME02'
+    collection_controls.assign(root)
 
     ctrl_aim_child = bones.new("MCH-Aim_shape_rotation")
     ctrl_aim_child.head = (0.0, 10.0, 1.7)
     ctrl_aim_child.tail = (0.0, 11.0, 1.7)
-    # Create bone collection and assign bone
-    rig.data.collections.new(name="MCH")
-    rig.data.collections['MCH'].assign(ctrl_aim_child)
-    rig.data.collections['MCH'].is_visible = False
+    collection_mch.assign(ctrl_aim_child)
 
     ctrl_aim = bones.new("Aim")
     ctrl_aim.head = (0.0, 10.0, 1.7)
     ctrl_aim.tail = (0.0, 11.0, 1.7)
     ctrl_aim.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_aim)
+    ctrl_aim.color.palette = 'THEME04'
+    collection_controls.assign(ctrl_aim)
 
     ctrl = bones.new("Camera")
     ctrl.head = (0.0, 0.0, 1.7)
     ctrl.tail = (0.0, 1.0, 1.7)
     ctrl.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl)
+    ctrl.color.palette = 'THEME02'
+    collection_controls.assign(ctrl)
 
     ctrl_offset = bones.new("Camera_Offset")
     ctrl_offset.head = (0.0, 0.0, 1.7)
     ctrl_offset.tail = (0.0, 1.0, 1.7)
     ctrl_offset.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_offset)
-
+    ctrl_offset.color.palette = 'THEME09'
+    collection_controls.assign(ctrl_offset)
 
     # Setup hierarchy
     ctrl.parent = root
@@ -91,45 +95,58 @@ def create_crane_bones(rig):
     """Create bones for the crane camera rig"""
     bones = rig.data.edit_bones
 
+    # Add bone collections
+    collection_controls = rig.data.collections.new(name="Controls")
+    collection_mch = rig.data.collections.new(name="MCH")
+    collection_mch.is_visible = False
+
     # Add new bones
     root = bones.new("Root")
     root.tail = (0.0, 1.0, 0.0)
     root.show_wire = True
-    rig.data.collections.new(name="Controls")
-    rig.data.collections['Controls'].assign(root)
+    root.color.palette = 'THEME02'
+    collection_controls.assign(root)
 
     ctrl_aim_child = bones.new("MCH-Aim_shape_rotation")
     ctrl_aim_child.head = (0.0, 10.0, 1.7)
     ctrl_aim_child.tail = (0.0, 11.0, 1.7)
-    rig.data.collections.new(name="MCH")
-    rig.data.collections['MCH'].assign(ctrl_aim_child)
-    rig.data.collections['MCH'].is_visible = False
+    collection_mch.assign(ctrl_aim_child)
 
     ctrl_aim = bones.new("Aim")
     ctrl_aim.head = (0.0, 10.0, 1.7)
     ctrl_aim.tail = (0.0, 11.0, 1.7)
     ctrl_aim.show_wire = True
-    rig.data.collections['Controls'].assign(ctrl_aim)
+    ctrl_aim.color.palette = 'THEME04'
+    collection_controls.assign(ctrl_aim)
 
     ctrl = bones.new("Camera")
     ctrl.head = (0.0, 1.0, 1.7)
     ctrl.tail = (0.0, 2.0, 1.7)
-    rig.data.collections['Controls'].assign(ctrl)
+    ctrl.color.palette = 'THEME02'
+    collection_controls.assign(ctrl)
 
     ctrl_offset = bones.new("Camera_Offset")
     ctrl_offset.head = (0.0, 1.0, 1.7)
     ctrl_offset.tail = (0.0, 2.0, 1.7)
-    rig.data.collections['Controls'].assign(ctrl_offset)
+    ctrl_offset.color.palette = 'THEME09'
+    collection_controls.assign(ctrl_offset)
 
     arm = bones.new("Crane_Arm")
     arm.head = (0.0, 0.0, 1.7)
     arm.tail = (0.0, 1.0, 1.7)
-    rig.data.collections['Controls'].assign(arm)
+    arm.bbone_x = 0.05
+    arm.bbone_z = 0.05
+    arm.color.palette = 'THEME07'
+    collection_controls.assign(arm)
 
     height = bones.new("Crane_Height")
     height.head = (0.0, 0.0, 0.0)
     height.tail = (0.0, 0.0, 1.7)
-    rig.data.collections['Controls'].assign(height)
+    height.bbone_x = 0.05
+    height.bbone_z = 0.05
+    height.color.palette = 'THEME07'
+    collection_controls.assign(height)
+
 
     # Setup hierarchy
     ctrl.parent = arm
