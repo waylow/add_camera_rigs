@@ -3,6 +3,10 @@
 
 This add-on extends the functionality of a camera by creating control rigs with widgets and adds a panel to quickly access the camera’s settings from the 3D Viewport.
 
+## Video demo
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/bQDQSB66CE8/0.jpg)](https://www.youtube.com/watch?v=YbQDQSB66CE8)
+
 ## Activation
 Open Blender and go to Preferences then the Get Extensions tab.
 
