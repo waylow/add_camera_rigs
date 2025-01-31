@@ -1,13 +1,13 @@
-# SPDX-FileCopyrightText: 2019-2022 Blender Foundation
+# SPDX-FileCopyrightText: 2019 Wayne Dixon
 #
-# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from bpy.types import AddonPreferences
 from bpy.props import StringProperty
 
 
 class AddCameraRigsPreferences(AddonPreferences):
-    bl_idname = 'add_camera_rigs'
+    bl_idname = __package__
 
     # Widget prefix
     widget_prefix: StringProperty(
@@ -26,8 +26,7 @@ class AddCameraRigsPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row()
-        col = row.column()
+        col = layout.column()
         col.prop(self, "widget_prefix", text="Widget Prefix")
         col.prop(self, "camera_widget_collection_name", text="Collection name")
 
