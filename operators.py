@@ -68,7 +68,8 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
     @classmethod
     def poll(cls, context):
-        return poll_base(cls, context)
+        if not poll_base(cls, context):
+            return False
 
         _rig, cam = get_rig_and_cam(context.active_object)
         if cam is context.scene.camera:
