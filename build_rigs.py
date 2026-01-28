@@ -20,6 +20,15 @@ from .create_widgets import (
 )
 
 
+def lock_mch_transforms(rig):
+    for bone in rig.pose.bones:
+        if bone.name.startswith("MCH-"):
+            bone.lock_location = (True, True, True)
+            bone.lock_rotation = (True, True, True)
+            bone.lock_rotation_w = True
+            bone.lock_scale = (True, True, True)
+
+
 def create_prop_driver(rig, cam, prop_from, prop_to):
     """Create driver to a property on the rig"""
     driver = cam.data.driver_add(prop_to)
@@ -147,7 +156,6 @@ def create_crane_bones(rig):
     height.color.palette = 'THEME07'
     collection_controls.assign(height)
 
-
     # Setup hierarchy
     ctrl.parent = arm
     ctrl_offset.parent = ctrl
@@ -187,13 +195,15 @@ def setup_3d_rig(rig, cam):
     pb = pose_bones['Camera']
     pb["lens"] = 50.0
     ui_data = pb.id_properties_ui("lens")
-    ui_data.update(min=1.0, max=1000000.0, soft_max=5000.0, default=50.0, subtype="DISTANCE_CAMERA")
+    ui_data.update(min=1.0, max=1000000.0, soft_max=5000.0,
+                   default=50.0, subtype="DISTANCE_CAMERA")
 
     # lens offset property
     pb = pose_bones['Camera']
     pb["lens_offset"] = 0.0
     ui_data = pb.id_properties_ui("lens_offset")
-    ui_data.update(min=-1000000.0, max=1000000.0, soft_max = 5000.0, soft_min = -5000.0,default=0.0)
+    ui_data.update(min=-1000000.0, max=1000000.0,
+                   soft_max=5000.0, soft_min=-5000.0, default=0.0)
 
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
@@ -248,6 +258,9 @@ def setup_3d_rig(rig, cam):
     var.targets[0].id = rig
     var.targets[0].transform_type = 'SCALE_AVG'
     var.targets[0].bone_target = 'Root'
+
+    # lock all transforms on MCH bones
+    lock_mch_transforms(rig)
 
 
 def create_2d_bones(rig, cam):
@@ -476,8 +489,10 @@ def create_2d_bones(rig, cam):
     pose_bones["Left_Corner"].lock_rotation = (True,) * 3
     pose_bones["Right_Corner"].lock_rotation = (True,) * 3
 
-    # Camera settings
+    # lock all transforms on MCH bones
+    lock_mch_transforms(rig)
 
+    # Camera settings
     cam.data.sensor_fit = "HORIZONTAL"  # Avoids distortion in portrait format
     cam.data.dof.focus_object = rig
     cam.data.dof.focus_subtarget = "DOF"
@@ -539,7 +554,8 @@ def create_2d_bones(rig, cam):
 
     # Orthographic scale driver
     driver = cam.data.driver_add("ortho_scale").driver
-    driver.expression = "abs({distance_x} - (left_x - right_x))".format(distance_x=corner_distance_x)
+    driver.expression = "abs({distance_x} - (left_x - right_x))".format(
+        distance_x=corner_distance_x)
 
     for corner in ("left", "right"):
         var = driver.variables.new()
