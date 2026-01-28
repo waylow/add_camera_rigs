@@ -1,9 +1,9 @@
 schema_version = "1.0.0"
 id = "add_camera_rigs"
 name = "Add Camera Rigs"
-version = "1.8.1"
+version = "1.8.2"
 tagline = "Adds a Camera Rig with UI"
-maintainer = "Community"
+maintainer = "Wayne Dixon <waylowinternet@gmail.com>"
 type = "add-on"
 tags = ["Camera"]
 blender_version_min = "4.2.0"
