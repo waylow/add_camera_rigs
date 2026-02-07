@@ -263,8 +263,171 @@ def setup_3d_rig(rig, cam):
     lock_mch_transforms(rig)
 
 
-def create_2d_bones(rig, cam):
-    """Create bones for the 2D camera rig"""
+def create_simple_2d_bones(rig, cam):
+    """Create bones for the simple 2d camera rig"""
+    bones = rig.data.edit_bones
+
+    # Add bone collections
+    collection_controls = rig.data.collections.new(name="Controls")
+    collection_mch = rig.data.collections.new(name="MCH")
+    collection_mch.is_visible = False
+
+    # Add new bones
+    root = bones.new("Root")
+    root.tail = (0.0, 0.0, 1.0)
+    root.show_wire = True
+    root.color.palette = 'THEME02'
+    collection_controls.assign(root)
+
+    ctrl_aim_child = bones.new("MCH-Aim_widget")
+    ctrl_aim_child.head = (0.0, 1.0, 0.0)
+    ctrl_aim_child.tail = (0.0, 1.0, 0.25)
+    collection_mch.assign(ctrl_aim_child)
+
+    ctrl_aim = bones.new("Aim")
+    ctrl_aim.head = (0.0, 1.0, 0.0)
+    ctrl_aim.tail = (0.0, 1.0, 1.0)
+    ctrl_aim.show_wire = True
+    ctrl_aim.color.palette = 'THEME04'
+    collection_controls.assign(ctrl_aim)
+
+    cam_offset = bones.new("Camera_Offset")
+    cam_offset.head = (0.0, 0.0, 0.0)
+    cam_offset.tail = (0.0, 0.0, 1.0)
+    cam_offset.show_wire = True
+    cam_offset.color.palette = 'THEME09'
+    collection_controls.assign(cam_offset)
+
+    mch_cam = bones.new("MCH-Camera")
+    mch_cam.head = (0.0, 0.0, 0.0)
+    mch_cam.tail = (0.0, 0.0, 0.25)
+    collection_mch.assign(mch_cam)
+
+    # Setup hierarchy
+    ctrl_aim_child.parent = ctrl_aim
+    ctrl_aim.parent = root
+    cam_offset.parent = mch_cam
+    mch_cam.parent = root
+
+    # Jump into object mode
+    bpy.ops.object.mode_set(mode='OBJECT')
+    pose_bones = rig.pose.bones
+    # Lock the relevant channels
+    pose_bones["Camera_Offset"].lock_scale[2] = True
+    pose_bones["Camera_Offset"].lock_rotation = (True,) * 3
+    pose_bones["Camera_Offset"].lock_scale = (True,) * 3
+
+    pose_bones["Aim"].lock_rotation = (True, True, False)
+    pose_bones["Aim"].lock_scale = (True, True, False)
+
+    ### Finish setting up Simple 2D Rig ###
+
+    # Jump into object mode and change bones to euler
+    bpy.ops.object.mode_set(mode='OBJECT')
+    pose_bones = rig.pose.bones
+    for bone in pose_bones:
+        bone.rotation_mode = 'XYZ'
+
+    # Build the widgets # TODO: Fix Widgets
+    root_widget = create_2d_root_widget("Camera_2D_Root")
+    camera_offset_widget = create_circle_widget(
+        "Camera_Offset", radius=0.23, axis='Z')
+    aim_widget = create_aim_widget("Aim")  # Create new Widget
+
+    # Add the custom bone shapes
+    pose_bones["Root"].custom_shape = root_widget
+    pose_bones["Aim"].custom_shape = aim_widget
+    pose_bones["Camera_Offset"].custom_shape = camera_offset_widget
+
+    # Set the "Override Transform" field to the mechanism position
+    pose_bones["Aim"].custom_shape_transform = pose_bones["MCH-Aim_widget"]
+
+    # Add constraints to bones
+    con = pose_bones['MCH-Aim_widget'].constraints.new('TRANSFORM')
+    con.target = rig
+    con.subtarget = "Aim"
+    con.use_motion_extrapolate = True
+    con.target_space = 'LOCAL'
+    con.owner_space = 'LOCAL'
+    con.map_from = 'SCALE'
+    con.from_min_z_scale = 0
+    con.from_min_z_scale = 0
+    con.map_to_x_from = 'Z'
+    con.to_min_x_scale = 0
+    con.map_to_x_from = 'Y'
+    con.to_min_x_scale = 0
+
+    con = pose_bones['MCH-Camera'].constraints.new('COPY_LOCATION')
+    con.target = rig
+    con.subtarget = "Aim"
+    con.use_z = False
+    con.target_space = 'LOCAL_OWNER_ORIENT'
+    con.owner_space = 'LOCAL'
+
+    con = pose_bones['MCH-Camera'].constraints.new('COPY_ROTATION')
+    con.target = rig
+    con.subtarget = "Aim"
+
+    cam.data.type = 'ORTHO'
+
+    # Drivers
+    # Ortho Driver
+    drv = cam.data.driver_add("ortho_scale")
+    drv.driver.expression = "aim_scale_z * root_scale"
+
+    var = drv.driver.variables.new()
+    var.name = 'aim_scale_z'
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].bone_target = 'Aim'
+    var.targets[0].transform_type = 'SCALE_Z'
+    var.targets[0].transform_space = 'LOCAL_SPACE'
+
+    var = drv.driver.variables.new()
+    var.name = 'root_scale'
+    var.type = 'TRANSFORMS'
+    var.targets[0].id = rig
+    var.targets[0].transform_type = 'SCALE_AVG'
+    var.targets[0].bone_target = 'Root'
+
+    # B-Bone Scale X
+    drv = pose_bones["Aim"].driver_add("custom_shape_scale_xyz", 0)
+    drv.driver.expression = "1 if scene_x >= scene_y else (scene_x / scene_y)"
+
+    var = drv.driver.variables.new()
+    var.name = 'scene_x'
+    var.type = 'CONTEXT_PROP'
+    var.targets[0].context_property = 'ACTIVE_SCENE'
+    var.targets[0].data_path = "render.resolution_x"
+
+    var = drv.driver.variables.new()
+    var.name = 'scene_y'
+    var.type = 'CONTEXT_PROP'
+    var.targets[0].context_property = 'ACTIVE_SCENE'
+    var.targets[0].data_path = "render.resolution_y"
+
+    # B-Bone Scale Y
+    drv = pose_bones["Aim"].driver_add("custom_shape_scale_xyz", 1)
+    drv.driver.expression = "(16/9) if scene_x <= scene_y else (scene_y / scene_x) * (16/9)"
+
+    var = drv.driver.variables.new()
+    var.name = 'scene_x'
+    var.type = 'CONTEXT_PROP'
+    var.targets[0].context_property = 'ACTIVE_SCENE'
+    var.targets[0].data_path = "render.resolution_x"
+
+    var = drv.driver.variables.new()
+    var.name = 'scene_y'
+    var.type = 'CONTEXT_PROP'
+    var.targets[0].context_property = 'ACTIVE_SCENE'
+    var.targets[0].data_path = "render.resolution_y"
+
+    # lock all transforms on MCH bones
+    lock_mch_transforms(rig)
+
+
+def create_advanced_2d_bones(rig, cam):
+    """Create bones for the advanced 2D camera rig"""
     bones = rig.data.edit_bones
 
     # Add bone collections
@@ -679,7 +842,7 @@ def build_camera_rig(context, mode):
     context.scene.camera = cam
 
     # Add the rig object
-    rig_name = mode.capitalize() + "_Rig"
+    rig_name = mode.title() + "_Rig"
     rig_data = bpy.data.armatures.new(rig_name)
     rig = object_utils.object_data_add(context, rig_data, name=rig_name)
     rig["rig_id"] = rig_name
@@ -694,11 +857,14 @@ def build_camera_rig(context, mode):
     elif mode == "CRANE":
         create_crane_bones(rig)
         setup_3d_rig(rig, cam)
+    elif mode == "2D_SIMPLE":
+        create_simple_2d_bones(rig, cam)
     elif mode == "2D":
-        create_2d_bones(rig, cam)
+        create_advanced_2d_bones(rig, cam)
 
+    # Move the camera to the correct position
+    cam.location = (0.0, -1.0, 0.0)
     # Parent the camera to the rig
-    cam.location = (0.0, -1.0, 0.0)  # Move the camera to the correct position
     cam.parent = rig
     cam.parent_type = "BONE"
     if mode == "2D":
@@ -722,21 +888,22 @@ def build_camera_rig(context, mode):
     pose_bones = rig.pose.bones
 
     # DOF Focus Distance property
-    pb = pose_bones['Camera']
-    pb["focus_distance"] = 10.0
-    ui_data = pb.id_properties_ui('focus_distance')
-    ui_data.update(min=0.0, default=10.0)
+    if mode != "2D_SIMPLE":
+        pb = pose_bones['Camera']
+        pb["focus_distance"] = 10.0
+        ui_data = pb.id_properties_ui('focus_distance')
+        ui_data.update(min=0.0, default=10.0)
 
-    # DOF F-Stop property
-    pb = pose_bones['Camera']
-    pb["aperture_fstop"] = 2.8
-    ui_data = pb.id_properties_ui('aperture_fstop')
-    ui_data.update(min=0.0, soft_min=0.1, soft_max=128.0, default=2.8)
+        # DOF F-Stop property
+        pb = pose_bones['Camera']
+        pb["aperture_fstop"] = 2.8
+        ui_data = pb.id_properties_ui('aperture_fstop')
+        ui_data.update(min=0.0, soft_min=0.1, soft_max=128.0, default=2.8)
 
-    # Add drivers to link the camera properties to the custom props
-    # on the armature
-    create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
-    create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
+        # Add drivers to link the camera properties to the custom props
+        # on the armature
+        create_prop_driver(rig, cam, "focus_distance", "dof.focus_distance")
+        create_prop_driver(rig, cam, "aperture_fstop", "dof.aperture_fstop")
 
     # Make the rig the active object
     view_layer = context.view_layer
@@ -752,12 +919,17 @@ class OBJECT_OT_build_camera_rig(Operator):
     bl_description = "Build a Camera Rig"
     bl_options = {'REGISTER', 'UNDO'}
 
-    mode: bpy.props.EnumProperty(items=(('DOLLY', 'Dolly', 'Dolly rig'),
-                                        ('CRANE', 'Crane', 'Crane rig',),
-                                        ('2D', '2D', '2D rig')),
-                                 name="mode",
-                                 description="Type of camera to create",
-                                 default="DOLLY")
+    mode: bpy.props.EnumProperty(
+        items=(
+            ('DOLLY', 'Dolly', 'Dolly rig'),
+            ('CRANE', 'Crane', 'Crane rig'),
+            ('2D_SIMPLE', '2D_Simple', '2D rig (Simple)'),
+            ('2D', '2D', '2D rig (Advanced)'),
+        ),  # ← this was missing
+        name="mode",
+        description="Type of camera to create",
+        default="DOLLY"
+    )
 
     def execute(self, context):
         # Build the rig
@@ -765,8 +937,8 @@ class OBJECT_OT_build_camera_rig(Operator):
         return {'FINISHED'}
 
 
-def add_dolly_crane_buttons(self, context):
-    """Dolly and crane entries in the Add Object > Camera Menu"""
+def add_cameras_to_menu(self, context):
+    """Add Cameras to the Add Object > Camera Menu"""
     if context.mode == 'OBJECT':
         self.layout.operator(
             OBJECT_OT_build_camera_rig.bl_idname,
@@ -782,7 +954,13 @@ def add_dolly_crane_buttons(self, context):
 
         self.layout.operator(
             OBJECT_OT_build_camera_rig.bl_idname,
-            text="2D Camera Rig",
+            text="2D Rig (Simple)",
+            icon='PIVOT_BOUNDBOX'
+        ).mode = "2D_SIMPLE"
+
+        self.layout.operator(
+            OBJECT_OT_build_camera_rig.bl_idname,
+            text="2D Rig (Advanced)",
             icon='PIVOT_BOUNDBOX'
         ).mode = "2D"
 
@@ -797,7 +975,7 @@ def register():
     for cls in classes:
         register_class(cls)
 
-    bpy.types.VIEW3D_MT_camera_add.append(add_dolly_crane_buttons)
+    bpy.types.VIEW3D_MT_camera_add.append(add_cameras_to_menu)
 
 
 def unregister():
@@ -805,7 +983,7 @@ def unregister():
     for cls in classes:
         unregister_class(cls)
 
-    bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_crane_buttons)
+    bpy.types.VIEW3D_MT_camera_add.remove(add_cameras_to_menu)
 
 
 if __name__ == "__main__":
