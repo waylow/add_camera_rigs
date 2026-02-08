@@ -17,6 +17,7 @@ from .create_widgets import (
     create_star_widget,
     create_cross_widget,
     create_2d_root_widget,
+    create_2d_simple_aim_widget,
 )
 
 
@@ -328,11 +329,11 @@ def create_simple_2d_bones(rig, cam):
     for bone in pose_bones:
         bone.rotation_mode = 'XYZ'
 
-    # Build the widgets # TODO: Fix Widgets
+    # Build the widgets
     root_widget = create_2d_root_widget("Camera_2D_Root")
     camera_offset_widget = create_circle_widget(
         "Camera_Offset", radius=0.23, axis='Z')
-    aim_widget = create_aim_widget("Aim")  # Create new Widget
+    aim_widget = create_2d_simple_aim_widget("Aim")
 
     # Add the custom bone shapes
     pose_bones["Root"].custom_shape = root_widget
@@ -352,10 +353,11 @@ def create_simple_2d_bones(rig, cam):
     con.map_from = 'SCALE'
     con.from_min_z_scale = 0
     con.from_min_z_scale = 0
+    con.map_to = 'SCALE'
     con.map_to_x_from = 'Z'
     con.to_min_x_scale = 0
-    con.map_to_x_from = 'Y'
-    con.to_min_x_scale = 0
+    con.map_to_y_from = 'Z'
+    con.to_min_y_scale = 0
 
     con = pose_bones['MCH-Camera'].constraints.new('COPY_LOCATION')
     con.target = rig
