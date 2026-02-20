@@ -27,6 +27,7 @@ def get_rig_and_cam(obj):
         return obj.parent, obj
     return None, None
 
+
 def calculate_aim_distance(obj):
     '''This will return the distance of the camera and the aim bone at the time it is called.'''
     camera_bone = obj.pose.bones['Camera'].matrix
@@ -53,10 +54,12 @@ def poll_perspective(cls, context):
 
     rig, cam = get_rig_and_cam(context.active_object)
     if cam.data.type == 'ORTHO':
-        cls.poll_message_set("This operator is not supported for orthographic cameras.")
+        cls.poll_message_set(
+            "This operator is not supported for orthographic cameras.")
         return False
     if rig["rig_id"].lower() == '2d_rig':
-        cls.poll_message_set("This operator is not supported for 2D camera rigs.")
+        cls.poll_message_set(
+            "This operator is not supported for 2D camera rigs.")
         return False
     return True
 
@@ -73,7 +76,8 @@ class ADD_CAMERA_RIGS_OT_set_scene_camera(Operator):
 
         _rig, cam = get_rig_and_cam(context.active_object)
         if cam is context.scene.camera:
-            cls.poll_message_set("Selected camera is already the scene camera.")
+            cls.poll_message_set(
+                "Selected camera is already the scene camera.")
             return False
         return True
 
@@ -120,7 +124,7 @@ class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator):
         cam.data.dof.focus_object = rig
         cam.data.dof.focus_subtarget = (
             'DOF' if rig["rig_id"].lower() == '2d_rig'
-            else 'MCH-Aim_shape_rotation')
+            else 'Aim')
 
         return {'FINISHED'}
 
@@ -169,7 +173,7 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator):
         # reset the offset back to zero
         rig.pose.bones["Camera"]["lens_offset"] = 0.0
 
-        #set the bone color to default
+        # set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'DEFAULT'
 
         return {'FINISHED'}
@@ -191,15 +195,19 @@ class ADD_CAMERA_RIGS_OT_shift_to_pivot(Operator):
         aim_loc = rig.pose.bones["Aim"].matrix_basis.to_translation()
 
         # create a transform matrix for the z loc of the aim bone
-        mat_trans = mathutils.Matrix.Translation( [0, 0, aim_loc[2] + 1.7 ]) # Hardcoded height of rest position   
+        mat_trans = mathutils.Matrix.Translation(
+            [0, 0, aim_loc[2] + 1.7])  # Hardcoded height of rest position
         # repostion the aim bone so it's above the root (using the original z value)
         rig.pose.bones["Aim"].matrix = rig.pose.bones["Root"].matrix @ mat_trans
 
         # offset the camera matrix relative to the new aim position
-        camera_offset_vector = (rig.pose.bones["Aim"].matrix_basis.to_translation() ) - aim_loc
-        camera_offset_matrix = mathutils.Matrix.Translation(camera_offset_vector)
+        camera_offset_vector = (
+            rig.pose.bones["Aim"].matrix_basis.to_translation()) - aim_loc
+        camera_offset_matrix = mathutils.Matrix.Translation(
+            camera_offset_vector)
         rig.pose.bones["Camera"].matrix = rig.pose.bones["Camera"].matrix @ camera_offset_matrix
         return {'FINISHED'}
+
 
 class ADD_CAMERA_RIGS_OT_swap_lens(Operator):
     bl_idname = "add_camera_rigs.swap_lens"

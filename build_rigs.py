@@ -61,7 +61,7 @@ def create_dolly_bones(rig):
     root.color.palette = 'THEME02'
     collection_controls.assign(root)
 
-    ctrl_aim_child = bones.new("MCH-Aim_shape_rotation")
+    ctrl_aim_child = bones.new("MCH-Aim_widget")
     ctrl_aim_child.head = (0.0, 10.0, 1.7)
     ctrl_aim_child.tail = (0.0, 11.0, 1.7)
     collection_mch.assign(ctrl_aim_child)
@@ -116,7 +116,7 @@ def create_crane_bones(rig):
     root.color.palette = 'THEME02'
     collection_controls.assign(root)
 
-    ctrl_aim_child = bones.new("MCH-Aim_shape_rotation")
+    ctrl_aim_child = bones.new("MCH-Aim_widget")
     ctrl_aim_child.head = (0.0, 10.0, 1.7)
     ctrl_aim_child.tail = (0.0, 11.0, 1.7)
     collection_mch.assign(ctrl_aim_child)
@@ -217,11 +217,13 @@ def setup_3d_rig(rig, cam):
     pose_bones["Camera"].custom_shape = camera_widget
     pose_bones["Camera_Offset"].custom_shape = camera_offset_widget
 
+    #
+
     # Set the "Override Transform" field to the mechanism position
-    pose_bones["Aim"].custom_shape_transform = pose_bones["MCH-Aim_shape_rotation"]
+    pose_bones["Aim"].custom_shape_transform = pose_bones["MCH-Aim_widget"]
 
     # Add constraints to bones
-    con = pose_bones['MCH-Aim_shape_rotation'].constraints.new('COPY_ROTATION')
+    con = pose_bones['MCH-Aim_widget'].constraints.new('COPY_ROTATION')
     con.target = rig
     con.subtarget = "Camera"
 
@@ -710,6 +712,11 @@ def build_camera_rig(context, mode):
     rig.data.display_type = 'BBONE'
     # Change display to wire for object
     rig.display_type = 'WIRE'
+    # Set the widgets to be 1.5 width (easier to see)
+    if bpy.app.version >= (4, 2, 0):
+        for bone in rig.pose.bones:
+            if bone.custom_shape:
+                bone.custom_shape_wire_width = 1.5
 
     # Lock camera transforms
     cam.lock_location = (True,) * 3
