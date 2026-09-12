@@ -23,12 +23,15 @@ class ADD_CAMERA_RIGS_MT_lens_ops(Menu):
 
     def draw(self, context):
         active_object = context.active_object
-        _rig, cam = get_rig_and_cam(active_object)
-        cam_data = cam.data
+        rig, _cam = get_rig_and_cam(active_object)
         layout = self.layout
 
-        drv = cam_data.animation_data.drivers[0]
-        if drv.driver.expression == "lens":
+        drv = next((
+            fcurve.driver
+            for fcurve in rig.animation_data.drivers
+            if 'lens_without_breathing' in fcurve.data_path
+        ), None)
+        if "lens_offset" not in drv.expression:
             layout.operator("add_camera_rigs.set_dolly_zoom")
         else:
             layout.operator("add_camera_rigs.remove_dolly_zoom")
@@ -52,10 +55,14 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigUIMixin):
         if rig["rig_id"].lower() in ("dolly_rig", "crane_rig"):
             col = layout.column(align=True)
             row = col.row(align=False)
-            drv = cam_data.animation_data.drivers[0]
+            drv = next((
+                fcurve.driver
+                for fcurve in rig.animation_data.drivers
+                if 'lens_without_breathing' in fcurve.data_path
+            ), None)
             if cam_data.type == 'ORTHO':
                 row.prop(cam_data, "ortho_scale")
-            elif drv.driver.expression == "lens":
+            elif "lens_offset" not in drv.expression:
                 row.prop(pose_bones["Camera"], '["lens"]', text="Focal Length")
             else:
                 row.prop(pose_bones["Camera"], '["lens_offset"]',
@@ -64,7 +71,7 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui(Panel, CameraRigUIMixin):
                 sub.enabled = False
                 sub.prop(cam_data, "lens")
             row.menu("ADD_CAMERA_RIGS_MT_lens_ops", icon='DOWNARROW_HLT', text="")
-
+            
             col = layout.column(align=True)
             col.prop(cam_data, "shift_x", text="Shift X")
             col.prop(cam_data, "shift_y", text="Y")
@@ -111,11 +118,16 @@ class ADD_CAMERA_RIGS_PT_camera_rig_ui_dof(Panel, CameraRigUIMixin):
             else:
                 col.operator("add_camera_rigs.set_dof_bone")
         sub = col.column(align=True)
-        sub.prop(cam_data.dof, "focus_object", text="Focus on Object")
+        sub.prop_search(rig, "acr_focus_object",
+                            context.scene, "objects", text="Focus on Object",
+                            results_are_suggestions=True)
         if (cam_data.dof.focus_object is not None
                 and cam_data.dof.focus_object.type == 'ARMATURE'):
-            sub.prop_search(cam_data.dof, "focus_subtarget",
+            sub.prop_search(rig, "acr_focus_subtarget",
                             cam_data.dof.focus_object.data, "bones")
+
+        col.prop(pose_bones["Camera"], '["lens_breathing_scale"]',
+                    text="Lens Breathing")
 
         row = col.row(align=True)
         row.active = cam_data.dof.focus_object is None

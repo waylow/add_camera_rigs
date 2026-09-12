@@ -108,6 +108,10 @@ The Aim bone will turn red to give visual feedback that Dolly Zoom mode is activ
 ### Focal Distance/F-Stop/Focal Length
 These are custom properties on the camera control bone that drive the equivalent setting on the actual camera. This makes it animatable inside the armature object rather than having to animate the armature and the camera.
 
+### Lens Breathing
+
+This custom property offsets the effective focal length based on the focus distance, or the focus object and subtarget if used. Increasing the scale makes the focal length offset stronger at shorter focus distances. This is meant to replicate the "breathing" that happens with real camera lenses as focus distances shorten.
+
 ### Show in Front
 Will make the rig object visible through all other geometry. (Useful if you have a fly through scene or if other meshes are in the way.)
 

@@ -19,6 +19,8 @@ from .create_widgets import (
     create_2d_root_widget,
 )
 
+from .operators import get_lens_expr, get_rig_and_cam
+
 
 def lock_mch_transforms(rig):
     for bone in rig.pose.bones:
@@ -205,6 +207,17 @@ def setup_3d_rig(rig, cam):
     ui_data.update(min=-1000000.0, max=1000000.0,
                    soft_max=5000.0, soft_min=-5000.0, default=0.0)
 
+    # Lens breathing scale property
+    pb["lens_breathing_scale"] = 0.0
+    ui_data = pb.id_properties_ui("lens_breathing_scale")
+    ui_data.update(soft_min=0.0, soft_max=1.0,
+                   default=0.0, subtype='FACTOR')
+
+    # Calculated focal length (with dolly offset, but not lens breathing)
+    pb["lens_without_breathing"] = 0.0
+    ui_data = pb.id_properties_ui("lens_without_breathing")
+    ui_data.update(subtype="DISTANCE_CAMERA")
+
     # Build the widgets
     root_widget = create_root_widget("Camera_Root")
     camera_widget = create_camera_widget("Camera")
@@ -237,7 +250,17 @@ def setup_3d_rig(rig, cam):
     cam.data.display_size = 1.0
     cam.rotation_euler[0] = pi / 2.0  # Rotate the camera 90 degrees in x
 
-    drv = create_prop_driver(rig, cam, "lens", "lens")
+    # make a driver that handles everything EXCEPT breathing
+    # to make swapping focal lengths and dolly easier to manage
+    drv = rig.pose.bones["Camera"].driver_add('["lens_without_breathing"]')
+    drv.driver.type = 'SCRIPTED'
+    drv.driver.expression = get_lens_expr()
+
+    var = drv.driver.variables.new()
+    var.name = 'lens'
+    var.type = 'SINGLE_PROP'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["lens"]'
 
     # create driver variables (for Dolly Zoom switching)
     var = drv.driver.variables.new()
@@ -260,6 +283,22 @@ def setup_3d_rig(rig, cam):
     var.targets[0].id = rig
     var.targets[0].transform_type = 'SCALE_AVG'
     var.targets[0].bone_target = 'Root'
+
+    # camera lens driver that subtracts lens breathing
+    drv = create_prop_driver(rig, cam, "lens_without_breathing", "lens")
+    drv.driver.expression = 'lens_without_breathing - (lens_breathing_scale * lens_without_breathing / max(focus_distance, 0.001))'
+
+    var = drv.driver.variables.new()
+    var.name = 'lens_breathing_scale'
+    var.type = 'SINGLE_PROP'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["lens_breathing_scale"]'
+
+    var = drv.driver.variables.new()
+    var.name = 'focus_distance'
+    var.type = 'SINGLE_PROP'
+    var.targets[0].id = rig
+    var.targets[0].data_path = 'pose.bones["Camera"]["focus_distance"]'
 
     # lock all transforms on MCH bones
     lock_mch_transforms(rig)
@@ -794,6 +833,74 @@ def add_dolly_crane_buttons(self, context):
         ).mode = "2D"
 
 
+def focus_obj_get(armature_obj):
+    _, cam = get_rig_and_cam(armature_obj)
+    return (
+        cam.data.dof.focus_object.name
+        if cam.data.dof.focus_object
+        else ''
+    )
+
+
+def focus_subtarget_get(armature_obj):
+    _, cam = get_rig_and_cam(armature_obj)
+    return cam.data.dof.focus_subtarget
+
+
+def focus_obj_set(armature_obj, value):
+    _, cam = get_rig_and_cam(armature_obj)
+    if value == '' or value not in bpy.context.scene.objects:
+        cam.data.dof.focus_object = None
+    else:
+        cam.data.dof.focus_object = bpy.context.scene.objects[value]
+
+
+def focus_subtarget_set(armature_obj, value):
+    try:
+        _, cam = get_rig_and_cam(armature_obj)
+        cam.data.dof.focus_subtarget = value
+    except Exception:
+        pass
+
+def update_focus_distance_calculation(armature_obj, value):
+    # update driver variable based on which are used
+    # camera_data = armature_data.
+    rig, cam = get_rig_and_cam(armature_obj)
+    lens_driver = next((
+        fcurve.driver
+        for fcurve in rig.animation_data.drivers
+        if 'lens_without_breathing' in fcurve.data_path
+    ), None)
+    if lens_driver is None:
+        # something went wrong, driver doesn't exist!
+        return
+
+    focus_distance = next((
+        var
+        for var in lens_driver.variables
+        if var.name == 'focus_distance'
+    ))
+    camera_dof_data = cam.data.dof
+
+    if camera_dof_data.focus_object is not None:
+        focus_distance.type = 'LOC_DIFF'
+        focus_distance.targets[0].id = rig
+        focus_distance.targets[0].bone_target = 'Camera'
+        if camera_dof_data.focus_subtarget:
+            # distance between target bone and camera bone
+            focus_distance.targets[1].id = camera_dof_data.focus_object
+            focus_distance.targets[1].bone_target = camera_dof_data.focus_subtarget
+        else:
+            # distance between target and camera bone
+            focus_distance.targets[1].id = camera_dof_data.focus_object
+            focus_distance.targets[1].bone_target = ''
+    else:  # just use float
+        focus_distance.type = 'SINGLE_PROP'
+        focus_distance.targets[0].id = rig
+        focus_distance.targets[0].data_path = 'pose.bones["Camera"]["focus_distance"]'
+
+
+
 classes = (
     OBJECT_OT_build_camera_rig,
 )
@@ -806,6 +913,21 @@ def register():
 
     bpy.types.VIEW3D_MT_camera_add.append(add_dolly_crane_buttons)
 
+    bpy.types.Object.acr_focus_object = bpy.props.StringProperty(
+        name='Focus Object',
+        description='Use this object to define the depth of field focal point',
+        get=focus_obj_get,
+        set=focus_obj_set,
+        update=update_focus_distance_calculation,
+    )
+    bpy.types.Object.acr_focus_subtarget = bpy.props.StringProperty(
+        name='Focus Object',
+        description='Use this object to define the depth of field focal point',
+        get=focus_subtarget_get,
+        set=focus_subtarget_set,
+        update=update_focus_distance_calculation,
+    )
+
 
 def unregister():
     from bpy.utils import unregister_class
@@ -814,6 +936,8 @@ def unregister():
 
     bpy.types.VIEW3D_MT_camera_add.remove(add_dolly_crane_buttons)
 
+    del bpy.types.Object.acr_focus_object
+    del bpy.types.Object.acr_focus_subtarget
 
 if __name__ == "__main__":
     register()
