@@ -6,6 +6,13 @@ import bpy
 import mathutils
 from bpy.types import Operator
 
+def get_lens_expr(dolly_distance=None):
+    return (
+        '((distance * (lens + lens_offset) / %s ) / root_scale)' % dolly_distance
+        if dolly_distance is not None
+        else 'lens'
+    )
+
 
 def get_rig_and_cam(obj):
     if (obj.type == 'ARMATURE'
@@ -119,10 +126,11 @@ class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator):
         return poll_base(cls, context)
 
     def execute(self, context):
-        rig, cam = get_rig_and_cam(context.active_object)
+        rig, _cam = get_rig_and_cam(context.active_object)
 
-        cam.data.dof.focus_object = rig
-        cam.data.dof.focus_subtarget = (
+        # use acr prop variables to trigger DOF update
+        rig.acr_focus_object = rig.name
+        rig.acr_focus_subtarget = (
             'DOF' if rig["rig_id"].lower() == '2d_rig'
             else 'Aim')
 
@@ -142,8 +150,12 @@ class ADD_CAMERA_RIGS_OT_set_dolly_zoom(Operator):
         rig, cam = get_rig_and_cam(context.active_object)
 
         value = calculate_aim_distance(rig)
-        drv = cam.data.animation_data.drivers[0]
-        drv.driver.expression = '(distance * (lens+lens_offset) / %s ) / root_scale' % value
+        drv = next(
+            drv
+            for drv in rig.animation_data.drivers
+            if 'lens_without_breathing' in drv.data_path
+        )
+        drv.driver.expression = get_lens_expr(dolly_distance=value)
 
         # set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'THEME01'
@@ -161,13 +173,16 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator):
         return poll_perspective(cls, context)
 
     def execute(self, context):
-        rig, cam = get_rig_and_cam(context.active_object)
+        rig, _cam = get_rig_and_cam(context.active_object)
 
-        lens_value = cam.data.lens
+        drv = next((
+            fcurve.driver
+            for fcurve in rig.animation_data.drivers
+            if 'lens_without_breathing' in fcurve.data_path
+        ), None)
+        lens_value = rig.pose.bones["Camera"]["lens_without_breathing"]
 
-        # set the lens to the current value
-        drv = cam.data.animation_data.drivers[0]
-        drv.driver.expression = 'lens'
+        drv.expression = get_lens_expr()
         rig.pose.bones["Camera"]["lens"] = lens_value
 
         # reset the offset back to zero
