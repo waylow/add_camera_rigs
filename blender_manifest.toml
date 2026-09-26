@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "add_camera_rigs"
 name = "Add Camera Rigs"
-version = "1.8.2"
+version = "1.9.0"
 tagline = "Adds a Camera Rig with UI"
 maintainer = "Wayne Dixon <waylowinternet@gmail.com>"
 type = "add-on"
@@ -15,6 +15,7 @@ copyright = [
     "2024 Kris Wittig",
     "2024 Damien Picard",
     "2024 Flavio Perez",
+    "2026 Spencer Magnusson",
 ]
 
 [build]
