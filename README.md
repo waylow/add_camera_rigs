@@ -6,6 +6,8 @@ This add-on extends the functionality of a camera by creating control rigs with 
 ## Video demo
 
 [![1.8 New Feature Demo](https://img.youtube.com/vi/bQDQSB66CE8/0.jpg)](https://www.youtube.com/watch?v=bQDQSB66CE8)
+>[!CAUTION] Note:
+>This video does **not** show the ***lens breathing*** feature that was added in v1.9
 
 ## Activation
 Open Blender and go to Preferences then the Get Extensions tab.
@@ -20,13 +22,13 @@ The first two rigs are very similar except the “Crane Rig” has two extra adj
 The 2D Camera Rig is mostly useful for 2D shots, when the camera is static and the action happens in front of it (like a theater stage).
 
 ## Usage
-Add a Add ‣ Camera ‣ Dolly Camera Rig, Crane Camera Rig or 2D Camera Rig. This will build the rig at the cursor location, add a new camera, making it the new active scene camera.  
+Add a Add ‣ Camera ‣ Dolly Camera Rig, Crane Camera Rig or 2D Camera Rig. This will build the rig at the cursor location, add a new camera, making it the new active scene camera.
 ![Menu Location](images/add-camera-rigs-menu-location.png)
 
 When the Rig is selected, the camera properties will be displayed in the Sidebar.
 
 # 3D Rigs (Dolly & Crane)
-These rigs are designed to make it easier to achieve the motion of a real world dolly camera rig and crane camera rig.  They have a similar set up, however, the Crane Rig has 2 extra controls for the height and the length of the crane arm. This arm makes it easier to achieve the arcing motion of the real life crane rig.  
+These rigs are designed to make it easier to achieve the motion of a real world dolly camera rig and crane camera rig.  They have a similar set up, however, the Crane Rig has 2 extra controls for the height and the length of the crane arm. This arm makes it easier to achieve the arcing motion of the real life crane rig.
 
 ![3d camera rigs in the viewport](images/dolly-and-crane-rigs.png)
 ## Controls
@@ -39,7 +41,7 @@ This is the control that will translate the camera around. By default it will tr
 ### Camera_Offset
 This is a child of the Camera control.  It is a secondary control to enable extra rotation or translation of the camera object without affecting the main control.
 
-### Aim 
+### Aim
 The camera will point at this control. You can also tilt the camera by rotating the Aim on its Y axis.
 
 ### Crane_Height (Crane Rig Only)
@@ -84,7 +86,7 @@ All Modes
 3D Viewport ‣ Sidebar ‣ Item ‣ Camera Rig
 
 
-The UI panel will display the most used camera settings. Only the added features will be explain here, for more information refer to the Cameras section.  
+The UI panel will display the most used camera settings. Only the added features will be explain here, for more information refer to the Cameras section.
 #### Dolly Rig UI
 ![Dolly Rig UI](images/dolly-rig-ui.png)
 #### 2d Rig UI
@@ -137,6 +139,6 @@ If you wish to switch cameras during an animation, you can do this with the Add 
 ## Troubleshooting
 If the Aim tracking or 2D rig are not functioning, check that you have “Auto Run Python Scripts” enabled in the Preferences Preferences ‣ Save & Load ‣ Auto Run Python Scripts.
 
-### See also:  
+### See also:
 A [blog post](https://lacuisine.tech/2d-camera-rig/) explaining the 2D rig by its authors.
 
