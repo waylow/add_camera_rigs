@@ -28,4 +28,5 @@ paths_exclude_pattern = [
   "*.blend[0123456789]",
   "*.md",
   "*.zip",
+  "tests/",
 ]
