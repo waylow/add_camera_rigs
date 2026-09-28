@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
+
 import bpy
 from bpy.types import Operator
 from bpy_extras import object_utils
@@ -868,18 +870,26 @@ def update_focus_distance_calculation(armature_obj, value):
     rig, cam = get_rig_and_cam(armature_obj)
     lens_driver = next((
         fcurve.driver
-        for fcurve in rig.animation_data.drivers
-        if 'lens_without_breathing' in fcurve.data_path
+        for fcurve in cam.data.animation_data.drivers
+        if 'lens' in fcurve.data_path
     ), None)
     if lens_driver is None:
-        # something went wrong, driver doesn't exist!
+        logging.getLogger('add_camera_rigs').error(
+            'update_focus_distance_calculation failed, driver doesn\'t exist!'
+        )
         return
 
     focus_distance = next((
         var
         for var in lens_driver.variables
         if var.name == 'focus_distance'
-    ))
+    ), None)
+    if focus_distance is None:
+        logging.getLogger('add_camera_rigs').error(
+            'update_focus_distance_calculation failed, driver variable doesn\'t exist!'
+        )
+        return
+
     camera_dof_data = cam.data.dof
 
     if camera_dof_data.focus_object is not None:

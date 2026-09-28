@@ -6,6 +6,45 @@ import bpy
 import mathutils
 from bpy.types import Operator
 
+
+def get_lens_driver_without_breathing(rig, cam):
+    """Backwards compatible access to camera lens driver."""
+    driver = None
+    if rig.animation_data is not None:
+        driver = next((
+            fcurve.driver
+            for fcurve in rig.animation_data.drivers
+            if 'lens_without_breathing' in fcurve.data_path
+        ), None)
+
+    if driver is None:  # lens breathing not supported
+        driver = next((
+            fcurve.driver
+            for fcurve in cam.data.animation_data.drivers
+            if 'lens' in fcurve.data_path
+        ), None)
+
+    return driver
+
+
+def get_lens_without_breathing(rig, cam):
+    """Backwards compatible access to camera lens value."""
+    lens_value = None
+    if rig.animation_data is not None:
+        fcurve = next((
+            fcurve
+            for fcurve in rig.animation_data.drivers
+            if 'lens_without_breathing' in fcurve.data_path
+        ), None)
+        if fcurve is not None:
+            lens_value = rig.pose.bones["Camera"]["lens_without_breathing"]
+    
+    if lens_value is None:  # lens breathing not supported
+        lens_value = cam.data.lens
+
+    return lens_value
+
+
 def get_lens_expr(dolly_distance=None):
     return (
         '((distance * (lens + lens_offset) / %s ) / root_scale)' % dolly_distance
@@ -126,13 +165,20 @@ class ADD_CAMERA_RIGS_OT_set_dof_bone(Operator):
         return poll_base(cls, context)
 
     def execute(self, context):
-        rig, _cam = get_rig_and_cam(context.active_object)
+        rig, cam = get_rig_and_cam(context.active_object)
 
-        # use acr prop variables to trigger DOF update
-        rig.acr_focus_object = rig.name
-        rig.acr_focus_subtarget = (
-            'DOF' if rig["rig_id"].lower() == '2d_rig'
-            else 'Aim')
+        if hasattr(rig.pose.bones["Camera"], '["lens_without_breathing"]'):
+            # use acr prop variables to trigger DOF update
+            rig.acr_focus_object = rig.name
+            rig.acr_focus_subtarget = (
+                'DOF' if rig["rig_id"].lower() == '2d_rig'
+                else 'Aim')
+        else:  # old rig, set focus directly
+            cam.data.dof.focus_object = rig
+            cam.data.dof.focus_subtarget = (
+                'DOF' if rig["rig_id"].lower() == '2d_rig'
+                else 'Aim')
+
 
         return {'FINISHED'}
 
@@ -150,12 +196,8 @@ class ADD_CAMERA_RIGS_OT_set_dolly_zoom(Operator):
         rig, cam = get_rig_and_cam(context.active_object)
 
         value = calculate_aim_distance(rig)
-        drv = next(
-            drv
-            for drv in rig.animation_data.drivers
-            if 'lens_without_breathing' in drv.data_path
-        )
-        drv.driver.expression = get_lens_expr(dolly_distance=value)
+        drv = get_lens_driver_without_breathing(rig, cam)
+        drv.expression = get_lens_expr(dolly_distance=value)
 
         # set the bone color to default
         rig.pose.bones["Aim"].color.palette = 'THEME01'
@@ -173,14 +215,10 @@ class ADD_CAMERA_RIGS_OT_remove_dolly_zoom(Operator):
         return poll_perspective(cls, context)
 
     def execute(self, context):
-        rig, _cam = get_rig_and_cam(context.active_object)
+        rig, cam = get_rig_and_cam(context.active_object)
 
-        drv = next((
-            fcurve.driver
-            for fcurve in rig.animation_data.drivers
-            if 'lens_without_breathing' in fcurve.data_path
-        ), None)
-        lens_value = rig.pose.bones["Camera"]["lens_without_breathing"]
+        drv = get_lens_driver_without_breathing(rig, cam)
+        lens_value = get_lens_without_breathing(rig, cam)
 
         drv.expression = get_lens_expr()
         rig.pose.bones["Camera"]["lens"] = lens_value
