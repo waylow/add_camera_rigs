@@ -837,6 +837,8 @@ def add_dolly_crane_buttons(self, context):
 
 def focus_obj_get(armature_obj):
     _, cam = get_rig_and_cam(armature_obj)
+    if cam is None:
+        return ''
     return (
         cam.data.dof.focus_object.name
         if cam.data.dof.focus_object
@@ -846,6 +848,8 @@ def focus_obj_get(armature_obj):
 
 def focus_subtarget_get(armature_obj):
     _, cam = get_rig_and_cam(armature_obj)
+    if cam is None:
+        return ''
     return cam.data.dof.focus_subtarget
 
 
